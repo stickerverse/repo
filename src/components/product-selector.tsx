@@ -1,5 +1,5 @@
 'use client';
-
+import { useState } from 'react';
 import {
   Select,
   SelectContent,
@@ -7,26 +7,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { StickerProduct } from './sticker-studio';
+import { Label } from './ui/label';
 
 type ProductSelectorProps = {
-  value: StickerProduct;
-  onValueChange: (value: StickerProduct) => void;
+  value: string;
+  onValueChange: (value: string) => void;
 };
+
+const products = [
+    'Die Cut Sticker',
+    'Sticker Sheet',
+    'Kiss Cut Sheet',
+    'Hang Tag Sticker',
+    'Epoxy 3D Sticker',
+    'Front Adhesive Sticker',
+    'Heavy Duty Sticker',
+    'Wall Sticker',
+    'Removable Sticker',
+    'Floor Sticker',
+];
 
 export function ProductSelector({ value, onValueChange }: ProductSelectorProps) {
   return (
-    <div className="w-full md:w-64">
-      <Select onValueChange={onValueChange} defaultValue={value}>
-        <SelectTrigger className="w-full bg-card/50 backdrop-blur-sm border-2 border-primary/20 hover:border-primary/50 transition-colors duration-300">
-          <SelectValue placeholder="Select a product" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="Die Cut Stickers">Die Cut Stickers</SelectItem>
-          <SelectItem value="Kiss Cut Stickers">Kiss Cut Stickers</SelectItem>
-          <SelectItem value="Sticker Sheets">Sticker Sheets</SelectItem>
-        </SelectContent>
-      </Select>
+    <div>
+        <Label className="text-xl font-black text-gray-800 mb-3 block">Product</Label>
+        <Select onValueChange={onValueChange} defaultValue={value}>
+            <SelectTrigger className="w-full bg-white border border-gray-200 rounded-lg p-4 h-auto">
+            <SelectValue placeholder="Select a product" />
+            </SelectTrigger>
+            <SelectContent>
+            {products.map((product) => (
+                <SelectItem key={product} value={product}>
+                {product}
+                </SelectItem>
+            ))}
+            </SelectContent>
+        </Select>
     </div>
   );
 }

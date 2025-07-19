@@ -1,37 +1,45 @@
 'use client';
 
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import type { StickerShape } from './sticker-studio';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 type ShapeSelectorProps = {
-  value: StickerShape;
-  onValueChange: (value: StickerShape) => void;
+  value: string;
+  onValueChange: (value: string) => void;
 };
+
+const shapes = [
+  { value: 'Contour Cut', label: 'Contour Cut', icon: 'https://d6ce0no7ktiq.cloudfront.net/images/web/wizard/ic_contourcut.svg' },
+  { value: 'Square', label: 'Square', icon: 'https://d6ce0no7ktiq.cloudfront.net/images/web/wizard/ic_square.svg' },
+  { value: 'Circle', label: 'Circle', icon: 'https://d6ce0no7ktiq.cloudfront.net/images/web/wizard/ic_circle.svg' },
+  { value: 'Rounded Corners', label: 'Rounded Corners', icon: 'https://d6ce0no7ktiq.cloudfront.net/images/web/wizard/ic_round-corners.svg' },
+];
 
 export function ShapeSelector({ value, onValueChange }: ShapeSelectorProps) {
   return (
-    <Card className="bg-transparent border-0 shadow-none">
-      <CardHeader className="p-0 mb-4">
-        <CardTitle className="text-xl font-headline">Shape</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
-        <RadioGroup value={value} onValueChange={(v) => onValueChange(v as StickerShape)} className="space-y-3">
-          <div className="flex items-center space-x-3 p-4 rounded-md border border-border hover:bg-accent/50 transition-colors">
-            <RadioGroupItem value="Square" id="shape-square" />
-            <Label htmlFor="shape-square" className="text-base font-normal flex-1 cursor-pointer">Square</Label>
-          </div>
-          <div className="flex items-center space-x-3 p-4 rounded-md border border-border hover:bg-accent/50 transition-colors">
-            <RadioGroupItem value="Circle" id="shape-circle" />
-            <Label htmlFor="shape-circle" className="text-base font-normal flex-1 cursor-pointer">Circle</Label>
-          </div>
-          <div className="flex items-center space-x-3 p-4 rounded-md border border-primary bg-primary/10 ring-2 ring-primary/50">
-            <RadioGroupItem value="Custom" id="shape-custom" />
-            <Label htmlFor="shape-custom" className="text-base font-medium text-primary-foreground flex-1 cursor-pointer">Custom</Label>
-          </div>
-        </RadioGroup>
-      </CardContent>
-    </Card>
+    <div>
+      <h3 className="text-xl font-black text-gray-800 mb-3">Shape</h3>
+      <RadioGroup value={value} onValueChange={onValueChange} className="bg-white rounded-lg border border-gray-200">
+        {shapes.map((shape, index) => (
+          <Label
+            key={shape.value}
+            htmlFor={`shape-${shape.value}`}
+            className={cn(
+              'flex items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-gray-50',
+              value === shape.value ? 'bg-gray-100 font-extrabold' : 'font-normal',
+              index > 0 && 'border-t border-gray-200'
+            )}
+          >
+            <div className="w-6 h-6 relative scale-150">
+              <Image src={shape.icon} alt={shape.label} fill />
+            </div>
+            <span className="flex-1 text-gray-800">{shape.label}</span>
+            <RadioGroupItem value={shape.value} id={`shape-${shape.value}`} className="sr-only" />
+          </Label>
+        ))}
+      </RadioGroup>
+    </div>
   );
 }
