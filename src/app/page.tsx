@@ -4,7 +4,7 @@ import { LampContainer } from "@/components/ui/lamp";
 export default function Home() {
   return (
     <LampContainer>
-      <div className="w-full max-w-7xl mx-auto px-4 z-10 -mt-80">
+      <div className="w-full max-w-7xl mx-auto px-4 z-10 -mt-20 md:-mt-40">
         <StickerCustomizer />
       </div>
     </LampContainer>
