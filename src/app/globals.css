@@ -94,13 +94,6 @@
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     z-index: -1;
-    animation: spin 4s linear infinite;
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
   }
 
   .animated-gradient-border-on-hover {
