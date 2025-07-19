@@ -32,43 +32,48 @@ export default function StickerCustomizer() {
         </p>
       </header>
       
-      <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-xl mb-8">
-        <CardContent className="p-6">
-          <StickerCanvas files={files} setFiles={setFiles} />
-        </CardContent>
-      </Card>
+      <div className="animated-gradient-border p-1 rounded-lg mb-8 shadow-2xl shadow-cyan-500/20">
+        <Card className="bg-slate-950/80 backdrop-blur-sm border-0">
+          <CardContent className="p-6">
+            <StickerCanvas files={files} setFiles={setFiles} />
+          </CardContent>
+        </Card>
+      </div>
 
-      <Card className="bg-white/10 backdrop-blur-sm border-white/20 shadow-xl">
-        <CardContent className="p-6">
-          <div className="grid grid-cols-12 gap-x-6 gap-y-8">
-            <div className="col-span-12 md:col-span-3 space-y-6">
-              <ProductSelector value={product} onValueChange={setProduct} />
-              <ShapeSelector value={shape} onValueChange={setShape} />
-            </div>
-            <div className="col-span-12 md:col-span-4 space-y-6">
-                <MaterialSelector value={material} onValueChange={setMaterial} />
-                <FinishSelector value={finish} onValueChange={setFinish} />
-            </div>
-            <div className="col-span-12 md:col-span-2">
-                <SizeSelector value={size} onValueChange={setSize} />
-            </div>
-            <div className="col-span-12 md:col-span-3">
-                <QuantitySelector value={quantity} onValueChange={setQuantity} />
-            </div>
 
-            <div className="col-span-12 flex justify-end">
-                <div className="w-full md:w-1/4">
-                    <Button 
-                        className="w-full bg-cyan-400 text-slate-900 font-bold text-base py-6 hover:bg-cyan-500 transition-colors duration-300"
-                        onClick={() => document.getElementById('file-upload-input')?.click()}
-                    >
-                        Upload file
-                    </Button>
-                </div>
+      <div className="animated-gradient-border p-1 rounded-lg shadow-2xl shadow-cyan-500/20">
+        <Card className="bg-slate-950/80 backdrop-blur-sm border-0">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-12 gap-x-6 gap-y-8">
+              <div className="col-span-12 md:col-span-3 space-y-6">
+                <ProductSelector value={product} onValueChange={setProduct} />
+                <ShapeSelector value={shape} onValueChange={setShape} />
+              </div>
+              <div className="col-span-12 md:col-span-4 space-y-6">
+                  <MaterialSelector value={material} onValueChange={setMaterial} />
+                  <FinishSelector value={finish} onValueChange={setFinish} />
+              </div>
+              <div className="col-span-12 md:col-span-2">
+                  <SizeSelector value={size} onValueChange={setSize} />
+              </div>
+              <div className="col-span-12 md:col-span-3">
+                  <QuantitySelector value={quantity} onValueChange={setQuantity} />
+              </div>
+
+              <div className="col-span-12 flex justify-end">
+                  <div className="w-full md:w-1/4">
+                      <Button 
+                          className="w-full bg-cyan-400 text-slate-900 font-bold text-base py-6 hover:bg-cyan-500 transition-colors duration-300 shadow-[0_0_20px_theme(colors.cyan.400)]"
+                          onClick={() => document.getElementById('file-upload-input')?.click()}
+                      >
+                          Upload file
+                      </Button>
+                  </div>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

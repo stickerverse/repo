@@ -27,15 +27,15 @@ export function QuantitySelector({ value, onValueChange }: QuantitySelectorProps
   return (
     <div>
       <h3 className="text-xl font-black text-white mb-3">Quantity</h3>
-      <RadioGroup value={value} onValueChange={onValueChange} className="bg-white/20 rounded-lg border border-white/30">
+      <RadioGroup value={value} onValueChange={onValueChange} className="bg-white/10 rounded-lg border border-white/20">
         {quantities.map((item, index) => (
           <Label
             key={item.quantity}
             htmlFor={`quantity-${item.quantity.replace(/\s/g, '-')}`}
             className={cn(
-              'flex items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-white/30',
-              value === item.quantity ? 'bg-white/30 font-extrabold' : 'font-normal',
-              index > 0 && 'border-t border-white/30'
+              'flex items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-white/20',
+              value === item.quantity ? 'bg-white/20 font-extrabold text-cyan-400' : 'font-normal',
+              index > 0 && 'border-t border-white/20'
             )}
           >
             <span className="flex-1 text-white ml-3">{item.quantity} pcs</span>

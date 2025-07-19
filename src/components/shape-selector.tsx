@@ -21,15 +21,15 @@ export function ShapeSelector({ value, onValueChange }: ShapeSelectorProps) {
   return (
     <div>
       <h3 className="text-xl font-black text-white mb-3">Shape</h3>
-      <RadioGroup value={value} onValueChange={onValueChange} className="bg-white/20 rounded-lg border border-white/30">
+      <RadioGroup value={value} onValueChange={onValueChange} className="bg-white/10 rounded-lg border border-white/20">
         {shapes.map((shape, index) => (
           <Label
             key={shape.value}
             htmlFor={`shape-${shape.value}`}
             className={cn(
-              'flex items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-white/30',
-              value === shape.value ? 'bg-white/30 font-extrabold' : 'font-normal',
-              index > 0 && 'border-t border-white/30'
+              'flex items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-white/20',
+              value === shape.value ? 'bg-white/20 font-extrabold text-cyan-400' : 'font-normal',
+              index > 0 && 'border-t border-white/20'
             )}
           >
             <div className="w-6 h-6 relative scale-150 invert">
