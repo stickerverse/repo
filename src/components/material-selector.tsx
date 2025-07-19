@@ -30,7 +30,7 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
   return (
     <div>
       <Label className="text-xl font-black text-white mb-3 block">Material</Label>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 md:gap-4 max-h-96 overflow-y-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-96 overflow-y-auto">
         {materials.map((material) => (
           <Card
             key={material.name}
