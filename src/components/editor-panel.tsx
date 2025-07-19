@@ -69,7 +69,7 @@ export function EditorPanel() {
   );
 
   return (
-    <Card className="w-80 h-auto bg-card/90 backdrop-blur-md border-border shadow-2xl animated-gradient-border-on-hover">
+    <Card className="w-80 h-auto bg-card/90 backdrop-blur-md border-border shadow-2xl">
       <CardContent className="p-4">
         <Tabs defaultValue="background" className="w-full" onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4 bg-secondary/50 p-1 h-auto rounded-lg backdrop-blur-sm">
