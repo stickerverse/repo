@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { CheckCircle } from 'lucide-react';
+import { Input } from './ui/input';
 
 type QuantitySelectorProps = {
   value: string;
@@ -22,6 +23,8 @@ const quantities = [
 ];
 
 export function QuantitySelector({ value, onValueChange }: QuantitySelectorProps) {
+  const isCustomSelected = value === 'Custom';
+
   return (
     <div className="space-y-4">
       <Label className="text-xl font-black text-white mb-3 block">Quantity</Label>
@@ -73,6 +76,17 @@ export function QuantitySelector({ value, onValueChange }: QuantitySelectorProps
           );
         })}
       </div>
+      {isCustomSelected && (
+        <div className="mt-4 space-y-2">
+           <Label htmlFor="custom-quantity" className="text-sm font-medium text-white">Enter quantity</Label>
+          <Input 
+            id="custom-quantity"
+            type="number" 
+            placeholder="e.g. 1000"
+            className="bg-white/20 border-white/30 text-white placeholder:text-gray-400 focus:ring-cyan-400"
+          />
+        </div>
+      )}
     </div>
   );
 }

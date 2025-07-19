@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { CheckCircle } from 'lucide-react';
+import { Input } from './ui/input';
 
 type SizeSelectorProps = {
   value: string;
@@ -21,6 +22,8 @@ const sizes = [
 ];
 
 export function SizeSelector({ value, onValueChange }: SizeSelectorProps) {
+  const isCustomSelected = value === 'Custom size';
+
   return (
     <div className="space-y-4">
       <Label className="text-xl font-black text-white mb-3 block">Size (WxH)</Label>
@@ -59,6 +62,20 @@ export function SizeSelector({ value, onValueChange }: SizeSelectorProps) {
           );
         })}
       </div>
+       {isCustomSelected && (
+        <div className="mt-4 space-y-4">
+           <div className="grid grid-cols-2 gap-4">
+            <div className='space-y-2'>
+              <Label htmlFor="custom-width" className="text-sm font-medium text-white">Width (in)</Label>
+              <Input id="custom-width" type="number" placeholder='e.g. 3.5' className="bg-white/20 border-white/30 text-white placeholder:text-gray-400 focus:ring-cyan-400" />
+            </div>
+             <div className='space-y-2'>
+              <Label htmlFor="custom-height" className="text-sm font-medium text-white">Height (in)</Label>
+              <Input id="custom-height" type="number" placeholder='e.g. 4' className="bg-white/20 border-white/30 text-white placeholder:text-gray-400 focus:ring-cyan-400" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
