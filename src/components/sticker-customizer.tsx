@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { FileWithPath } from 'react-dropzone';
 import { ProductSelector } from '@/components/product-selector';
 import { ShapeSelector } from '@/components/shape-selector';
 import { MaterialSelector } from '@/components/material-selector';
@@ -8,6 +9,7 @@ import { FinishSelector } from '@/components/finish-selector';
 import { SizeSelector } from '@/components/size-selector';
 import { QuantitySelector } from '@/components/quantity-selector';
 import { Button } from './ui/button';
+import { StickerCanvas } from './sticker-canvas';
 
 export default function StickerCustomizer() {
   const [product, setProduct] = useState('Die Cut Sticker');
@@ -16,6 +18,7 @@ export default function StickerCustomizer() {
   const [finish, setFinish] = useState('Glossy');
   const [size, setSize] = useState('2" x 2"');
   const [quantity, setQuantity] = useState('55');
+  const [files, setFiles] = useState<FileWithPath[]>([]);
 
   return (
     <div>
@@ -25,6 +28,10 @@ export default function StickerCustomizer() {
           Choose your desired cutline, size, quantity and material. Upload your design and go to our editor.
         </p>
       </header>
+      
+      <div className="mb-8">
+        <StickerCanvas files={files} setFiles={setFiles} />
+      </div>
 
       <div className="grid grid-cols-12 gap-x-4 gap-y-8">
         <div className="col-span-12 md:col-span-3">
@@ -48,7 +55,10 @@ export default function StickerCustomizer() {
 
         <div className="col-span-12 flex justify-end">
             <div className="w-full md:w-1/4">
-                <Button className="w-full bg-yellow-400 text-black font-bold text-base py-6 hover:bg-yellow-500">
+                <Button 
+                    className="w-full bg-yellow-400 text-black font-bold text-base py-6 hover:bg-yellow-500"
+                    onClick={() => document.getElementById('file-upload-input')?.click()}
+                >
                     Upload file
                 </Button>
             </div>
