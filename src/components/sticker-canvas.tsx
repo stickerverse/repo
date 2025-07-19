@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useCallback, useMemo } from 'react';
@@ -86,7 +87,7 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
   }, [files]);
 
   return (
-    <div className="relative aspect-video w-full h-auto min-h-[400px] md:min-h-[500px] bg-card border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg">
+    <div className="relative aspect-video w-full h-auto min-h-[400px] md:min-h-[500px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg">
       {/* Background stars effect */}
       <div className="absolute inset-0 stars opacity-20 pointer-events-none" />
       
