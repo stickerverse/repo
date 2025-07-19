@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { UploadCloud, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Card } from '@/components/ui/card';
+import { EditorPanel } from './editor-panel';
 
 type StickerCanvasProps = {
   files: FileWithPath[];
@@ -41,10 +41,14 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
     onDrop,
     accept: { 'image/png': ['.png'] },
     maxFiles: 1,
+    noClick: files.length > 0, // Disable click if a file is present
+    noKeyboard: files.length > 0,
   });
 
   const removeFile = () => {
-    URL.revokeObjectURL(files[0].preview);
+    if (files.length > 0 && files[0].preview) {
+        URL.revokeObjectURL(files[0].preview);
+    }
     setFiles([]);
   };
 
@@ -57,14 +61,11 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
             alt={files[0].name}
             fill
             className="object-contain"
-            onLoad={() => {
-              // URL.revokeObjectURL(files[0].preview); // This causes issues with re-renders, manage cleanup elsewhere
-            }}
           />
           <Button
             variant="destructive"
             size="icon"
-            className="absolute top-4 right-4 z-10 rounded-full"
+            className="absolute top-4 right-4 z-20 rounded-full"
             onClick={removeFile}
           >
             <X className="h-4 w-4" />
@@ -78,12 +79,11 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
 
 
   return (
-    <div className="relative aspect-video w-full h-auto min-h-[300px] bg-white/5 backdrop-blur-sm border-dashed border-2 border-white/20 hover:border-cyan-400 transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl shadow-primary/10 rounded-lg">
-      <div {...getRootProps()} className="w-full h-full flex items-center justify-center cursor-pointer">
+    <div className="relative aspect-video w-full h-auto min-h-[400px] md:min-h-[500px] bg-white/5 backdrop-blur-sm border-dashed border-2 border-white/20 hover:border-cyan-400 transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl shadow-primary/10 rounded-lg">
+      <div {...getRootProps({ className: 'w-full h-full flex items-center justify-center cursor-pointer' })}>
         <input {...getInputProps()} id="file-upload-input" />
-        {files.length > 0 ? (
-          filePreview
-        ) : (
+        
+        {files.length === 0 && (
           <div className="text-center p-8 text-gray-400">
             <UploadCloud className="mx-auto h-16 w-16 mb-4 text-cyan-400/70" />
             <p className="font-bold text-lg text-white">
@@ -93,6 +93,16 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
           </div>
         )}
       </div>
+
+      {filePreview}
+      
+      {files.length > 0 && (
+        <div className="absolute top-0 left-0 h-full p-4 z-10 pointer-events-none">
+          <div className="pointer-events-auto">
+            <EditorPanel />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
