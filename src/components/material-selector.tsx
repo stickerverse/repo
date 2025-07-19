@@ -57,7 +57,7 @@ const materials = [
 ];
 
 export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps) {
-  const [hoveredMaterial, setHoveredMaterial] = useState(null);
+  const [hoveredMaterial, setHoveredMaterial] = useState<string | null>(null);
 
   return (
     <div className="space-y-4">
@@ -84,7 +84,7 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
                 onMouseEnter={() => setHoveredMaterial(material.name)}
                 onMouseLeave={() => setHoveredMaterial(null)}
                 className={cn(
-                  'cursor-pointer transition-all duration-300 group border rounded-xl overflow-hidden relative backdrop-blur-sm',
+                  'cursor-pointer transition-all duration-300 group border rounded-xl backdrop-blur-sm',
                   isSelected
                     ? 'border-accent ring-2 ring-accent/50 bg-gradient-to-br from-accent/20 to-accent/10 shadow-xl shadow-accent/20 animated-gradient-border'
                     : 'border-border bg-card/50 hover:bg-card/80 hover:border-accent/40 hover:shadow-lg',
@@ -122,11 +122,9 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
                     />
                     
                     {/* Hover Overlay */}
-                    {isHovered && (
+                    {isHovered && IconComponent && (
                       <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex items-end justify-center pb-1">
-                        {IconComponent && (
                           <IconComponent className="h-4 w-4 text-accent animate-pulse" />
-                        )}
                       </div>
                     )}
                   </div>
@@ -161,23 +159,6 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
           );
         })}
       </div>
-
-      {/* Material Info */}
-      {hoveredMaterial && (
-        <div className="bg-card/30 backdrop-blur-sm border border-border rounded-lg p-3 transition-all duration-300 animated-gradient-border-on-hover">
-          <div className="flex items-center gap-2 mb-1">
-            <h4 className="font-semibold text-foreground">{hoveredMaterial}</h4>
-            {materials.find(m => m.name === hoveredMaterial)?.premium && (
-              <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs px-2 py-0.5 rounded-full font-bold">
-                PRO
-              </span>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {materials.find(m => m.name === hoveredMaterial)?.description}
-          </p>
-        </div>
-      )}
 
       <style jsx>{`
         .scrollbar-thin::-webkit-scrollbar {
