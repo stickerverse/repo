@@ -49,7 +49,7 @@ export function SizeSelector({ value, onValueChange }: SizeSelectorProps) {
                 )}
                 <CardContent className="p-3 flex flex-col items-center justify-center text-center h-full min-h-[70px]">
                    <h3 className={cn(
-                    'font-semibold text-sm transition-colors duration-200 line-clamp-1',
+                    'font-semibold text-base transition-colors duration-200 line-clamp-1',
                     isSelected 
                       ? 'font-extrabold text-accent' 
                       : 'text-foreground group-hover:text-accent'
