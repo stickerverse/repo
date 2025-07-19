@@ -27,7 +27,7 @@ export function SizeSelector({ value, onValueChange }: SizeSelectorProps) {
   return (
     <div className="space-y-4">
       <Label className="text-xl font-black text-white mb-3 block">Size (WxH)</Label>
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
         {sizes.map((size) => {
           const isSelected = value === size;
           return (
@@ -47,7 +47,7 @@ export function SizeSelector({ value, onValueChange }: SizeSelectorProps) {
                     <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent fill-accent/20" />
                   </div>
                 )}
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center h-full min-h-[80px]">
+                <CardContent className="p-3 flex flex-col items-center justify-center text-center h-full min-h-[70px]">
                    <h3 className={cn(
                     'font-semibold text-sm transition-colors duration-200 line-clamp-1',
                     isSelected 
