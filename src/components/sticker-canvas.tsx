@@ -64,14 +64,14 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
           <Button
             variant="destructive"
             size="icon"
-            className="absolute top-4 right-4 z-20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 shadow-lg"
+            className="absolute top-4 right-4 z-20 rounded-full opacity-100 group-hover:opacity-100 transition-all duration-200 hover:scale-110 shadow-lg"
             onClick={removeFile}
           >
             <X className="h-4 w-4" />
           </Button>
           
           {/* File info overlay */}
-          <div className="absolute bottom-4 left-4 bg-card/80 backdrop-blur-sm border border-border rounded-lg p-3 opacity-0 group-hover:opacity-100 transition-all duration-200">
+          <div className="absolute bottom-4 left-4 bg-card/80 backdrop-blur-sm border border-border rounded-lg p-3 opacity-100 group-hover:opacity-100 transition-all duration-200">
             <div className="flex items-center gap-2 text-sm">
               <Image className="h-4 w-4 text-accent" />
               <span className="font-medium text-foreground">{files[0].name}</span>
@@ -89,7 +89,7 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
   return (
     <div className="relative aspect-video w-full h-auto min-h-[400px] md:min-h-[500px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg">
       {/* Background stars effect */}
-      <div className="absolute inset-0 stars opacity-20 pointer-events-none" />
+      <div className="absolute inset-0 stars opacity-100 pointer-events-none" />
       
       <div {...getRootProps({ 
         className: `w-full h-full flex items-center justify-center cursor-pointer transition-all duration-300 ${
@@ -177,9 +177,7 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
           height: 100%;
           background: linear-gradient(
             90deg,
-            transparent,
             hsl(var(--accent) / 0.1),
-            transparent
           );
           animation: shimmer 2s infinite;
         }

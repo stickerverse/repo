@@ -1,6 +1,6 @@
+
 'use client';
 
-import { useRef, type MouseEvent } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Upload } from 'lucide-react';
@@ -30,27 +30,14 @@ export function PropertiesMenu({
   setFinish,
   onUploadClick,
 }: PropertiesMenuProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    const card = cardRef.current;
-    if (!card) return;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    card.style.setProperty('--mouse-x', `${x}px`);
-    card.style.setProperty('--mouse-y', `${y}px`);
-  };
 
   return (
     <Card
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      className="relative bg-card/50 backdrop-blur-sm overflow-hidden p-1 animated-gradient-border"
+      className="relative bg-card/50 backdrop-blur-sm p-1 animated-gradient-border"
     >
       <div className="bg-card rounded-md p-6">
         <CardContent className="p-0">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-12">
             <div className="md:col-span-3">
               <ShapeSelector value={shape} onValueChange={setShape} />
             </div>
