@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main>
        <LampContainer>
-        <div className="w-full max-w-7xl mx-auto px-4 z-10 pt-48">
+        <div className="w-full max-w-7xl mx-auto px-4 z-10 pt-64">
           <StickerCustomizer />
         </div>
       </LampContainer>
