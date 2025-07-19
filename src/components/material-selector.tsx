@@ -43,8 +43,8 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
               'min-w-[112px]'
             )}
           >
-            <div className="flex flex-col items-center justify-center p-3">
-              <div className="relative w-24 h-24 mb-2">
+            <div className="flex flex-col items-center justify-center p-2">
+              <div className="relative w-24 h-24 mb-1">
                 <Image
                   src={material.image}
                   alt={material.name}
