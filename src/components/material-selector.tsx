@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -36,7 +37,7 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
             key={material.name}
             onClick={() => onValueChange(material.name)}
             className={cn(
-              'cursor-pointer transition-all duration-200 overflow-hidden group border rounded-lg',
+              'cursor-pointer transition-all duration-200 group border rounded-lg',
               value === material.name
                 ? 'border-transparent ring-2 ring-cyan-400 bg-white/30'
                 : 'border-white/30 bg-white/20 hover:bg-white/30',
@@ -44,13 +45,13 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
             )}
           >
             <div className="flex flex-col items-center justify-center p-2">
-              <div className="relative w-24 h-24 mb-1">
+              <div className="relative w-24 h-24 mb-1 overflow-hidden rounded">
                 <Image
                   src={material.image}
                   alt={material.name}
                   width={96}
                   height={96}
-                  className="object-cover rounded"
+                  className="object-cover"
                 />
               </div>
               <p className={cn(
