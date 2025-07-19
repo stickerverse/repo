@@ -29,7 +29,7 @@ const materials = [
 export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps) {
   return (
     <div>
-      <Label className="text-xl font-black text-gray-800 mb-3 block">Material</Label>
+      <Label className="text-xl font-black text-white mb-3 block">Material</Label>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-1 md:gap-4 max-h-96 overflow-y-auto">
         {materials.map((material) => (
           <Card
@@ -38,8 +38,8 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
             className={cn(
               'cursor-pointer transition-all duration-200 overflow-hidden group border rounded-lg',
               value === material.name
-                ? 'border-transparent ring-2 ring-gray-800 bg-gray-100'
-                : 'border-gray-200 bg-white hover:bg-gray-50',
+                ? 'border-transparent ring-2 ring-cyan-400 bg-white/30'
+                : 'border-white/30 bg-white/20 hover:bg-white/30',
               'min-w-[112px]'
             )}
           >
@@ -50,12 +50,12 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
                   alt={material.name}
                   width={96}
                   height={96}
-                  className="object-cover"
+                  className="object-cover rounded"
                 />
               </div>
               <p className={cn(
                 'font-semibold text-center text-sm',
-                value === material.name ? 'font-extrabold text-gray-800' : 'text-gray-700'
+                value === material.name ? 'font-extrabold text-white' : 'text-gray-200'
               )}>{material.name}</p>
             </div>
           </Card>

@@ -20,22 +20,22 @@ const shapes = [
 export function ShapeSelector({ value, onValueChange }: ShapeSelectorProps) {
   return (
     <div>
-      <h3 className="text-xl font-black text-gray-800 mb-3">Shape</h3>
-      <RadioGroup value={value} onValueChange={onValueChange} className="bg-white rounded-lg border border-gray-200">
+      <h3 className="text-xl font-black text-white mb-3">Shape</h3>
+      <RadioGroup value={value} onValueChange={onValueChange} className="bg-white/20 rounded-lg border border-white/30">
         {shapes.map((shape, index) => (
           <Label
             key={shape.value}
             htmlFor={`shape-${shape.value}`}
             className={cn(
-              'flex items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-gray-50',
-              value === shape.value ? 'bg-gray-100 font-extrabold' : 'font-normal',
-              index > 0 && 'border-t border-gray-200'
+              'flex items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-white/30',
+              value === shape.value ? 'bg-white/30 font-extrabold' : 'font-normal',
+              index > 0 && 'border-t border-white/30'
             )}
           >
-            <div className="w-6 h-6 relative scale-150">
+            <div className="w-6 h-6 relative scale-150 invert">
               <Image src={shape.icon} alt={shape.label} fill />
             </div>
-            <span className="flex-1 text-gray-800">{shape.label}</span>
+            <span className="flex-1 text-white">{shape.label}</span>
             <RadioGroupItem value={shape.value} id={`shape-${shape.value}`} className="sr-only" />
           </Label>
         ))}

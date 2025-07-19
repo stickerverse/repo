@@ -55,8 +55,8 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
           <Image
             src={files[0].preview}
             alt={files[0].name}
-            layout="fill"
-            objectFit="contain"
+            fill
+            className="object-contain"
             onLoad={() => {
               // URL.revokeObjectURL(files[0].preview); // This causes issues with re-renders, manage cleanup elsewhere
             }}
@@ -73,25 +73,26 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
       );
     }
     return null;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
 
 
   return (
-    <Card className="relative aspect-video w-full h-auto min-h-[300px] bg-card/30 backdrop-blur-sm border-dashed border-2 border-border hover:border-primary transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl shadow-primary/10">
+    <div className="relative aspect-video w-full h-auto min-h-[300px] bg-white/5 backdrop-blur-sm border-dashed border-2 border-white/20 hover:border-cyan-400 transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl shadow-primary/10 rounded-lg">
       <div {...getRootProps()} className="w-full h-full flex items-center justify-center cursor-pointer">
         <input {...getInputProps()} id="file-upload-input" />
         {files.length > 0 ? (
           filePreview
         ) : (
-          <div className="text-center p-8 text-muted-foreground">
-            <UploadCloud className="mx-auto h-16 w-16 mb-4 text-primary/70" />
-            <p className="font-bold text-lg text-foreground">
+          <div className="text-center p-8 text-gray-400">
+            <UploadCloud className="mx-auto h-16 w-16 mb-4 text-cyan-400/70" />
+            <p className="font-bold text-lg text-white">
               {isDragActive ? 'Drop the file here ...' : "Drag 'n' drop a PNG file here, or click to select"}
             </p>
             <p className="text-sm">Transparent PNGs work best</p>
           </div>
         )}
       </div>
-    </Card>
+    </div>
   );
 }

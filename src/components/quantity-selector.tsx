@@ -26,21 +26,21 @@ const quantities = [
 export function QuantitySelector({ value, onValueChange }: QuantitySelectorProps) {
   return (
     <div>
-      <h3 className="text-xl font-black text-gray-800 mb-3">Quantity</h3>
-      <RadioGroup value={value} onValueChange={onValueChange} className="bg-white rounded-lg border border-gray-200">
+      <h3 className="text-xl font-black text-white mb-3">Quantity</h3>
+      <RadioGroup value={value} onValueChange={onValueChange} className="bg-white/20 rounded-lg border border-white/30">
         {quantities.map((item, index) => (
           <Label
             key={item.quantity}
             htmlFor={`quantity-${item.quantity.replace(/\s/g, '-')}`}
             className={cn(
-              'flex items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-gray-50',
-              value === item.quantity ? 'bg-gray-100 font-extrabold' : 'font-normal',
-              index > 0 && 'border-t border-gray-200'
+              'flex items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-white/30',
+              value === item.quantity ? 'bg-white/30 font-extrabold' : 'font-normal',
+              index > 0 && 'border-t border-white/30'
             )}
           >
-            <span className="flex-1 text-gray-800 ml-3">{item.quantity} pcs</span>
-            {item.price && <span className="text-gray-800 text-right">{item.price}</span>}
-            {item.discount && <Badge variant="destructive" className="bg-transparent text-green-600 font-bold text-sm w-16 justify-end">{item.discount}</Badge>}
+            <span className="flex-1 text-white ml-3">{item.quantity} pcs</span>
+            {item.price && <span className="text-white text-right">{item.price}</span>}
+            {item.discount && <Badge variant="destructive" className="bg-transparent text-green-400 font-bold text-sm w-16 justify-end">{item.discount}</Badge>}
             <RadioGroupItem value={item.quantity} id={`quantity-${item.quantity.replace(/\s/g, '-')}`} className="sr-only" />
           </Label>
         ))}
