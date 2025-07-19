@@ -11,9 +11,11 @@ import { QuantitySelector } from '@/components/quantity-selector';
 import { Button } from './ui/button';
 import { StickerCanvas } from './sticker-canvas';
 import { Card, CardContent } from './ui/card';
+import { LaminationSelector } from './lamination-selector';
 
 export default function StickerCustomizer() {
   const [product, setProduct] = useState('Die Cut Sticker');
+  const [lamination, setLamination] = useState('No');
   const [shape, setShape] = useState('Contour Cut');
   const [material, setMaterial] = useState('Vinyl');
   const [finish, setFinish] = useState('Glossy');
@@ -47,6 +49,7 @@ export default function StickerCustomizer() {
             <div className="grid grid-cols-12 gap-x-6 gap-y-8">
               <div className="col-span-12 md:col-span-4 space-y-6">
                 <ProductSelector value={product} onValueChange={setProduct} />
+                <LaminationSelector value={lamination} onValueChange={setLamination} />
                 <ShapeSelector value={shape} onValueChange={setShape} />
               </div>
               <div className="col-span-12 md:col-span-4 space-y-6">
