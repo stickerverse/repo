@@ -32,7 +32,7 @@ export default function StickerCustomizer() {
         </p>
       </header>
       
-      <div className="animated-gradient-border p-1 rounded-lg mb-8 shadow-2xl shadow-cyan-500/20">
+      <div className="p-1 rounded-lg mb-8 shadow-2xl shadow-cyan-500/20">
         <Card className="bg-slate-950/80 backdrop-blur-sm border-0">
           <CardContent className="p-6">
             <StickerCanvas files={files} setFiles={setFiles} />
@@ -45,7 +45,7 @@ export default function StickerCustomizer() {
         <Card className="bg-slate-950/80 backdrop-blur-sm border-0">
           <CardContent className="p-6">
             <div className="grid grid-cols-12 gap-x-6 gap-y-8">
-              <div className="col-span-12 md:col-span-3 space-y-6">
+              <div className="col-span-12 md:col-span-4 space-y-6">
                 <ProductSelector value={product} onValueChange={setProduct} />
                 <ShapeSelector value={shape} onValueChange={setShape} />
               </div>
@@ -53,10 +53,8 @@ export default function StickerCustomizer() {
                   <MaterialSelector value={material} onValueChange={setMaterial} />
                   <FinishSelector value={finish} onValueChange={setFinish} />
               </div>
-              <div className="col-span-12 md:col-span-2">
+              <div className="col-span-12 md:col-span-4 space-y-6">
                   <SizeSelector value={size} onValueChange={setSize} />
-              </div>
-              <div className="col-span-12 md:col-span-3">
                   <QuantitySelector value={quantity} onValueChange={setQuantity} />
               </div>
 

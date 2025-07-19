@@ -1,8 +1,10 @@
+
 'use client';
 
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { CheckCircle } from 'lucide-react';
 
 type SizeSelectorProps = {
   value: string;
@@ -15,33 +17,48 @@ const sizes = [
     '4" x 4"',
     '5" x 5"',
     '6" x 6"',
-    '7" x 7"',
-    '8" x 8"',
-    '9" x 9"',
-    '10" x 10"',
     'Custom size',
 ];
 
 export function SizeSelector({ value, onValueChange }: SizeSelectorProps) {
   return (
-    <div>
-      <h3 className="text-xl font-black text-white mb-3">Size, inch (WxH)</h3>
-      <RadioGroup value={value} onValueChange={onValueChange} className="bg-white/10 rounded-lg border border-white/20">
-        {sizes.map((size, index) => (
-          <Label
-            key={size}
-            htmlFor={`size-${size.replace(/\s/g, '-')}`}
-            className={cn(
-              'flex items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-white/20',
-              value === size ? 'bg-white/20 font-extrabold text-cyan-400' : 'font-normal',
-              index > 0 && 'border-t border-white/20'
-            )}
-          >
-            <span className="flex-1 text-white ml-3">{size}</span>
-            <RadioGroupItem value={size} id={`size-${size.replace(/\s/g, '-')}`} className="sr-only" />
-          </Label>
-        ))}
-      </RadioGroup>
+    <div className="space-y-4">
+      <Label className="text-xl font-black text-white mb-3 block">Size (WxH)</Label>
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        {sizes.map((size) => {
+          const isSelected = value === size;
+          return (
+            <div key={size} className="relative">
+              <Card
+                onClick={() => onValueChange(size)}
+                className={cn(
+                  'cursor-pointer transition-all duration-300 group border rounded-xl relative backdrop-blur-sm',
+                  isSelected
+                    ? 'border-accent ring-2 ring-accent/50 bg-gradient-to-br from-accent/20 to-accent/10 shadow-xl shadow-accent/20'
+                    : 'border-border bg-card/50 hover:bg-card/80 hover:border-accent/40 hover:shadow-lg',
+                  'min-w-0 max-w-full'
+                )}
+              >
+                {isSelected && (
+                  <div className="absolute top-1 sm:top-2 left-1 sm:left-2 z-10">
+                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent fill-accent/20" />
+                  </div>
+                )}
+                <CardContent className="p-4 flex flex-col items-center justify-center text-center h-full min-h-[80px]">
+                   <h3 className={cn(
+                    'font-semibold text-sm transition-colors duration-200 line-clamp-1',
+                    isSelected 
+                      ? 'font-extrabold text-accent' 
+                      : 'text-foreground group-hover:text-accent'
+                  )}>
+                    {size}
+                  </h3>
+                </CardContent>
+              </Card>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
