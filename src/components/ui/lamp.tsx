@@ -2,6 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { ShootingStars } from "./shooting-stars";
 
 export function LampDemo() {
   return (
@@ -36,6 +37,26 @@ export const LampContainer = ({
         className
       )}
     >
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.05)_0%,rgba(0,0,0,0)_80%)]" />
+        <div className="stars absolute inset-0" />
+      </div>
+      <ShootingStars
+        starColor="#13E2F2"
+        trailColor="#4A4A4A"
+        minSpeed={15}
+        maxSpeed={35}
+        minDelay={1000}
+        maxDelay={3000}
+      />
+       <ShootingStars
+        starColor="#13E2F2"
+        trailColor="#4A4A4A"
+        minSpeed={10}
+        maxSpeed={25}
+        minDelay={2000}
+        maxDelay={4000}
+      />
       <div className="relative flex w-full flex-1 scale-y-125 items-center justify-center isolate z-0 ">
         <motion.div
           initial={{ opacity: 0.5, width: "15rem" }}
