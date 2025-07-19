@@ -38,10 +38,10 @@ export function PropertiesMenu({
       <div className="bg-card rounded-md p-6">
         <CardContent className="p-0">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-12">
-            <div className="md:col-span-3">
+            <div className="md:col-span-4">
               <ShapeSelector value={shape} onValueChange={setShape} />
             </div>
-            <div className="md:col-span-5">
+            <div className="md:col-span-4">
               <MaterialSelector value={material} onValueChange={setMaterial} />
             </div>
             <div className="md:col-span-4">
