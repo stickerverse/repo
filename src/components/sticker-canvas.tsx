@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, from 'react';
@@ -8,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { EditorPanel } from './editor-panel';
 import type { SizeOption as SheetSizeOption } from './size-selector';
 import { cn } from '@/lib/utils';
+import type { StickerShape } from './sticker-studio';
 
 type StickerCanvasProps = {
   files: FileWithPath[];
@@ -15,6 +17,7 @@ type StickerCanvasProps = {
   sizeOption: SheetSizeOption;
   gridOption: GridOption;
   product: string;
+  shape: StickerShape;
 };
 
 export type GridOption = number;
@@ -23,7 +26,7 @@ interface FileWithPreview extends FileWithPath {
   preview?: string;
 }
 
-export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product }: StickerCanvasProps) {
+export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product, shape }: StickerCanvasProps) {
   const { toast } = useToast();
   const [position, setPosition] = React.useState({ x: 0, y: 0 });
   const [scale, setScale] = React.useState(100);
@@ -142,6 +145,20 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
     window.removeEventListener('mouseup', handleMouseUp);
   };
 
+  const getShapeClasses = (baseShape: StickerShape) => {
+    switch (baseShape) {
+      case 'Circle':
+        return 'rounded-full';
+      case 'Square':
+        return 'rounded-none';
+      case 'Rounded Corners':
+        return 'rounded-lg';
+      case 'Contour Cut':
+      default:
+        return 'rounded-lg';
+    }
+  };
+
   const filePreview = React.useMemo(() => {
     if (files.length === 0 && !isSheet) return null;
     
@@ -177,6 +194,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
     
     if (isSheet) {
       const { cols, rows } = getGridLayout(gridOption);
+      const shapeClasses = getShapeClasses(shape);
       
       return (
         <div className="absolute inset-4 grid gap-2" style={{ 
@@ -188,7 +206,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
             return (
               <div
                 key={index}
-                className={cn('relative border-2 border-dashed border-border/30 rounded-lg flex items-center justify-center group', {
+                className={cn('relative border-2 border-dashed border-border/30 flex items-center justify-center group', shapeClasses, {
                   'bg-card/50': file,
                   'bg-muted/20': !file,
                 })}
@@ -230,7 +248,8 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
     }
     
     return null;
-  }, [files, isSheet, position, rotation, scale, gridOption, getGridLayout, removeFile, getRootProps]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [files, isSheet, position, rotation, scale, gridOption, getGridLayout, removeFile, getRootProps, shape]);
 
   const getCanvasAspect = () => {
     if (!isSheet) return 'aspect-square';

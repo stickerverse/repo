@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -6,8 +7,8 @@ import { StickerCanvas } from '@/components/sticker-canvas';
 import { PropertiesMenu } from '@/components/properties-menu';
 import { ProductSelector } from '@/components/product-selector';
 
-export type StickerMaterial = 'Matte' | 'Glossy' | 'Holographic';
-export type StickerShape = 'Square' | 'Circle' | 'Custom';
+export type StickerMaterial = 'Vinyl' | 'Holographic' | 'Transparent' | 'Glitter' | 'Mirror' | 'Pixie Dust';
+export type StickerShape = 'Contour Cut' | 'Square' | 'Circle' | 'Rounded Corners';
 export type StickerFinish = 'Standard' | 'UV Protected' | 'Laminated';
 export type StickerProduct = 'Die Cut Stickers' | 'Kiss Cut Stickers' | 'Sticker Sheets';
 
