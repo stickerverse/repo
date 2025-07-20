@@ -21,14 +21,24 @@ import {
 import { Card, CardContent } from './ui/card';
 import { GradientBorderButton } from './ui/gradient-border-button';
 
-export function EditorPanel() {
-  const [activeTab, setActiveTab] = useState('background');
+type EditorPanelProps = {
+  scale: number;
+  setScale: (scale: number) => void;
+  rotation: number;
+  setRotation: (rotation: number) => void;
+};
+
+export function EditorPanel({
+  scale,
+  setScale,
+  rotation,
+  setRotation,
+}: EditorPanelProps) {
+  const [activeTab, setActiveTab] = useState('edit');
   const [backgroundColor, setBackgroundColor] = useState('#3b82f6');
   const [borderWidth, setBorderWidth] = useState(2);
   const [borderRadius, setBorderRadius] = useState(8);
   const [opacity, setOpacity] = useState(100);
-  const [rotation, setRotation] = useState(0);
-  const [scale, setScale] = useState(100);
 
   const ColorPicker = ({ value, onChange, label }) => (
     <div className="space-y-2">
@@ -37,7 +47,7 @@ export function EditorPanel() {
         <div 
           className="w-8 h-8 rounded border-2 border-border cursor-pointer transition-all hover:scale-105"
           style={{ backgroundColor: value }}
-          onClick={() => document.getElementById(`color-${label}`).click()}
+          onClick={() => document.getElementById(`color-${label}`)?.click()}
         />
         <input
           id={`color-${label}`}
@@ -72,8 +82,14 @@ export function EditorPanel() {
   return (
     <Card className="w-80 h-auto bg-card/90 backdrop-blur-md border-border shadow-2xl">
       <CardContent className="p-4">
-        <Tabs defaultValue="background" className="w-full" onValueChange={setActiveTab}>
+        <Tabs defaultValue="edit" className="w-full" onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4 bg-secondary/50 p-1 h-auto rounded-lg backdrop-blur-sm">
+             <TabsTrigger 
+              value="edit" 
+              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
+            >
+              <Pencil className="h-5 w-5"/>
+            </TabsTrigger>
             <TabsTrigger 
               value="background" 
               className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
@@ -91,12 +107,6 @@ export function EditorPanel() {
               className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
             >
               <Image className="h-5 w-5"/>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="edit" 
-              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
-            >
-              <Pencil className="h-5 w-5"/>
             </TabsTrigger>
           </TabsList>
 

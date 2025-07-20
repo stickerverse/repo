@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState, useRef } from 'react';
 import { useDropzone, type FileWithPath } from 'react-dropzone';
 import { UploadCloud, X, Image, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,12 @@ type StickerCanvasProps = {
 
 export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
   const { toast } = useToast();
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [scale, setScale] = useState(100);
+  const [rotation, setRotation] = useState(0);
+  const isDragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const imageRef = useRef<HTMLDivElement>(null);
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[], rejectedFiles: any[]) => {
@@ -33,6 +39,10 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
           })
         )
       );
+      // Reset transform on new image
+      setPosition({ x: 0, y: 0 });
+      setScale(100);
+      setRotation(0);
     },
     [setFiles, toast]
   );
@@ -41,7 +51,7 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
     onDrop,
     accept: { 'image/png': ['.png'] },
     maxFiles: 1,
-    noClick: files.length > 0, // Disable click if a file is present
+    noClick: files.length > 0,
     noKeyboard: files.length > 0,
   });
 
@@ -52,49 +62,73 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
     setFiles([]);
   };
 
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    isDragging.current = true;
+    dragStart.current = {
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (isDragging.current) {
+      setPosition({
+        x: e.clientX - dragStart.current.x,
+        y: e.clientY - dragStart.current.y,
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+    window.removeEventListener('mousemove', handleMouseMove);
+    window.removeEventListener('mouseup', handleMouseUp);
+  };
+
   const filePreview = useMemo(() => {
     if (files.length > 0 && files[0].preview) {
       return (
-        <div className="relative w-full h-full flex items-center justify-center group">
+        <div 
+          ref={imageRef}
+          className="absolute group cursor-grab active:cursor-grabbing"
+          style={{
+            transform: `translate(${position.x}px, ${position.y}px) rotate(${rotation}deg) scale(${scale / 100})`,
+          }}
+          onMouseDown={handleMouseDown}
+        >
           <img
             src={files[0].preview}
             alt={files[0].name}
-            className="max-w-full max-h-full object-contain transition-all duration-300 group-hover:scale-105"
+            className="max-w-full max-h-full object-contain pointer-events-none"
           />
           <Button
             variant="destructive"
             size="icon"
-            className="absolute top-4 right-4 z-20 rounded-full opacity-100 group-hover:opacity-100 transition-all duration-200 hover:scale-110 shadow-lg"
-            onClick={removeFile}
+            className="absolute top-0 right-0 z-20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 shadow-lg"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent drag from starting
+              removeFile();
+            }}
           >
             <X className="h-4 w-4" />
           </Button>
-          
-          {/* File info overlay */}
-          <div className="absolute bottom-4 left-4 bg-card/80 backdrop-blur-sm border border-border rounded-lg p-3 opacity-100 group-hover:opacity-100 transition-all duration-200">
-            <div className="flex items-center gap-2 text-base">
-              <Image className="h-4 w-4 text-accent" />
-              <span className="font-medium text-foreground">{files[0].name}</span>
-            </div>
-            <p className="text-sm text-muted-foreground mt-1">
-              {(files[0].size / 1024).toFixed(1)} KB
-            </p>
-          </div>
         </div>
       );
     }
     return null;
-  }, [files]);
+  }, [files, position, rotation, scale]);
 
   return (
     <div className="relative aspect-video w-full h-auto min-h-[400px] md:min-h-[500px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg">
-      {/* Background stars effect */}
       <div className="absolute inset-0 stars opacity-100 pointer-events-none" />
       
       <div {...getRootProps({ 
-        className: `w-full h-full flex items-center justify-center cursor-pointer transition-all duration-300 ${
+        className: `w-full h-full flex items-center justify-center transition-all duration-300 ${
           isDragActive ? 'bg-accent/10 scale-105' : ''
-        }` 
+        } ${files.length > 0 ? '' : 'cursor-pointer'}` 
       })}>
         <input {...getInputProps()} id="file-upload-input" />
         
@@ -133,7 +167,6 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
               </div>
             </div>
             
-            {/* Upload suggestions */}
             <div className="mt-6 p-4 bg-secondary/30 rounded-lg border border-border">
               <p className="text-sm text-muted-foreground font-medium mb-2">💡 Pro Tips:</p>
               <ul className="text-sm text-muted-foreground space-y-1 text-left">
@@ -144,6 +177,18 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
             </div>
           </div>
         )}
+
+        {files.length > 0 && (
+           <div className="absolute bottom-4 left-4 bg-card/80 backdrop-blur-sm border border-border rounded-lg p-3 opacity-100 group-hover:opacity-100 transition-all duration-200 z-20">
+            <div className="flex items-center gap-2 text-base">
+              <Image className="h-4 w-4 text-accent" />
+              <span className="font-medium text-foreground">{files[0].name}</span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              {(files[0].size / 1024).toFixed(1)} KB
+            </p>
+          </div>
+        )}
       </div>
 
       {filePreview}
@@ -151,12 +196,16 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
       {files.length > 0 && (
         <div className="absolute top-0 left-0 h-full p-4 z-10 pointer-events-none">
           <div className="pointer-events-auto">
-            <EditorPanel />
+            <EditorPanel 
+              scale={scale}
+              setScale={setScale}
+              rotation={rotation}
+              setRotation={setRotation}
+            />
           </div>
         </div>
       )}
       
-      {/* Corner accent elements */}
       <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-accent/30 pointer-events-none" />
       <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-accent/30 pointer-events-none" />
       <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-accent/30 pointer-events-none" />
