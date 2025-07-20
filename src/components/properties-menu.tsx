@@ -2,8 +2,8 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Upload } from 'lucide-react';
+import { GradientBorderButton } from './ui/gradient-border-button';
 
 import { ShapeSelector } from './shape-selector';
 import { MaterialSelector } from './material-selector';
@@ -49,10 +49,14 @@ export function PropertiesMenu({
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-border">
-            <Button size="lg" className="w-full text-lg font-bold" onClick={onUploadClick}>
+            <GradientBorderButton 
+              size="lg" 
+              className="w-full text-lg font-bold" 
+              onClick={onUploadClick}
+            >
               <Upload className="mr-2 h-5 w-5" />
               Upload your artwork
-            </Button>
+            </GradientBorderButton>
           </div>
         </CardContent>
       </div>
