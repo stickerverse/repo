@@ -19,6 +19,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
+import { GradientBorderButton } from './ui/gradient-border-button';
 
 export function EditorPanel() {
   const [activeTab, setActiveTab] = useState('background');
@@ -282,10 +283,12 @@ export function EditorPanel() {
                   </div>
                 </div>
 
-                <button className="w-full p-3 bg-accent/20 hover:bg-accent/30 border border-accent/50 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 text-accent font-medium">
+                <GradientBorderButton 
+                  className="w-full font-medium"
+                >
                   <Download className="h-4 w-4" />
                   Export Project
-                </button>
+                </GradientBorderButton>
               </div>
             </TabsContent>
           </div>

@@ -8,10 +8,11 @@ import { MaterialSelector } from '@/components/material-selector';
 import { FinishSelector } from '@/components/finish-selector';
 import { SizeSelector } from '@/components/size-selector';
 import { QuantitySelector } from '@/components/quantity-selector';
-import { Button } from './ui/button';
 import { StickerCanvas } from './sticker-canvas';
 import { Card, CardContent } from './ui/card';
 import { LaminationSelector } from './lamination-selector';
+import { GradientBorderButton } from './ui/gradient-border-button';
+import { Upload } from 'lucide-react';
 
 export default function StickerCustomizer() {
   const [product, setProduct] = useState('Die Cut Sticker');
@@ -63,12 +64,14 @@ export default function StickerCustomizer() {
 
               <div className="col-span-12 flex justify-end">
                   <div className="w-full md:w-1/4">
-                      <Button 
-                          className="w-full bg-cyan-400 text-slate-900 font-bold text-base py-6 hover:bg-cyan-500 transition-colors duration-300 shadow-[0_0_20px_theme(colors.cyan.400)]"
+                      <GradientBorderButton 
+                          size="lg"
+                          className="w-full text-lg font-bold"
                           onClick={() => document.getElementById('file-upload-input')?.click()}
                       >
+                          <Upload className="mr-2 h-5 w-5" />
                           Upload file
-                      </Button>
+                      </GradientBorderButton>
                   </div>
               </div>
             </div>
