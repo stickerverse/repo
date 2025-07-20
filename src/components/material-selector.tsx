@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -107,7 +108,7 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
                   </div>
                 )}
 
-                <div className="flex flex-col items-center justify-center p-2 sm:p-4 h-full min-h-[120px] sm:min-h-[140px]">
+                <div className="flex flex-col items-center justify-center p-2 sm:p-4 h-full min-h-[140px] sm:min-h-[160px]">
                   {/* Image Container */}
                   <div className={cn(
                     "relative w-12 h-12 sm:w-16 sm:h-16 mb-2 sm:mb-3 overflow-hidden rounded-lg transition-transform duration-300",
@@ -141,7 +142,7 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
 
                   {/* Description */}
                   <p className={cn(
-                    'text-xs text-center mt-1 transition-all duration-200 line-clamp-2 hidden sm:block',
+                    'text-xs text-center mt-1 transition-all duration-200 hidden sm:block',
                     isSelected 
                       ? 'text-accent/80 opacity-100' 
                       : 'text-muted-foreground opacity-0 group-hover:opacity-100'
@@ -175,13 +176,6 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
         .line-clamp-1 {
           display: -webkit-box;
           -webkit-line-clamp: 1;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
