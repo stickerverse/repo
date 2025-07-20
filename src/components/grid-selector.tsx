@@ -45,23 +45,27 @@ export function GridSelector({ maxRows = 8, maxCols = 8, value, onValueChange, o
   const [spacing, setSpacing] = useState([5]);
   const [margin, setMargin] = useState([10]);
   const [activeTab, setActiveTab] = useState("presets");
+  const [currentLayout, setCurrentLayout] = useState<GridLayout>({ rows: 3, cols: 4, spacing: 5, margin: 10, total: 12 });
 
   const handleSelect = (row: number, col: number) => {
     const total = (row + 1) * (col + 1);
-    onValueChange(total);
-    onLayoutChange?.({
+    const layout = {
       rows: row + 1,
       cols: col + 1,
       spacing: spacing[0],
       margin: margin[0],
       total
-    });
+    };
+    onValueChange(total);
+    onLayoutChange?.(layout);
+    setCurrentLayout(layout);
     setIsOpen(false);
   };
 
   const handlePresetSelect = (layout: GridLayout) => {
     onValueChange(layout.total);
     onLayoutChange?.(layout);
+    setCurrentLayout(layout);
     setSpacing([layout.spacing]);
     setMargin([layout.margin]);
     setIsOpen(false);
@@ -69,14 +73,16 @@ export function GridSelector({ maxRows = 8, maxCols = 8, value, onValueChange, o
 
   const handleCustomApply = () => {
     const total = customRows * customCols;
-    onValueChange(total);
-    onLayoutChange?.({
+    const layout = {
       rows: customRows,
       cols: customCols,
       spacing: spacing[0],
       margin: margin[0],
       total
-    });
+    };
+    onValueChange(total);
+    onLayoutChange?.(layout);
+    setCurrentLayout(layout);
     setIsOpen(false);
   };
 
@@ -84,30 +90,24 @@ export function GridSelector({ maxRows = 8, maxCols = 8, value, onValueChange, o
     const total = Math.floor((maxRows * maxCols) * 0.8);
     const rows = Math.ceil(Math.sqrt(total));
     const cols = Math.ceil(total / rows);
-    
-    onValueChange(total);
-    onLayoutChange?.({
+    const layout = {
       rows,
       cols,
       spacing: 3,
       margin: 8,
       total
-    });
+    };
+    
+    onValueChange(total);
+    onLayoutChange?.(layout);
+    setCurrentLayout(layout);
+    setSpacing([3]);
+    setMargin([8]);
     setIsOpen(false);
   };
   
-  const getRowsFromValue = (v: GridOption) => {
-    if (v <= maxCols) return 1;
-    for (let i = Math.floor(Math.sqrt(v)); i > 0; i--) {
-        if (v % i === 0 && (v/i) <= maxCols) {
-            return i;
-        }
-    }
-    return Math.ceil(v / maxCols);
-  }
-
-  const selectedRows = getRowsFromValue(value);
-  const selectedCols = Math.ceil(value / selectedRows);
+  const selectedRows = currentLayout.rows;
+  const selectedCols = currentLayout.cols;
 
 
   return (

@@ -10,7 +10,7 @@ import { FinishSelector } from '@/components/finish-selector';
 import { SizeSelector, type SizeOption as SheetSizeOption } from '@/components/size-selector';
 import { QuantitySelector } from '@/components/quantity-selector';
 import { StickerCanvas, type GridOption, type FileWithPreview } from './sticker-canvas';
-import { GridSelector } from './grid-selector';
+import { GridSelector, type GridLayout } from './grid-selector';
 import { Label } from './ui/label';
 import type { StickerShape } from './sticker-studio';
 import { Card, CardContent } from './ui/card';
@@ -29,6 +29,7 @@ export default function StickerCustomizer() {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [sheetSizeOption, setSheetSizeOption] = useState<SheetSizeOption>('A4');
   const [gridOption, setGridOption] = useState<GridOption>(12);
+  const [gridLayout, setGridLayout] = useState<GridLayout>({ rows: 3, cols: 4, spacing: 5, margin: 10, total: 12 });
 
 
   return (
@@ -41,6 +42,7 @@ export default function StickerCustomizer() {
               setFiles={setFiles} 
               sizeOption={sheetSizeOption}
               gridOption={gridOption}
+              gridLayout={gridLayout}
               product={product}
               shape={shape}
             />
@@ -63,6 +65,7 @@ export default function StickerCustomizer() {
                         maxRows={8}
                         value={gridOption}
                         onValueChange={(value) => setGridOption(value as GridOption)}
+                        onLayoutChange={(layout) => setGridLayout(layout)}
                       />
                     </div>
                     <ShapeSelector value={shape} onValueChange={(value: string) => setShape(value as StickerShape)} />

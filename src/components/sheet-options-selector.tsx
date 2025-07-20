@@ -6,13 +6,14 @@ import { Label } from '@/components/ui/label';
 import { Grid3X3, RectangleHorizontal, RectangleVertical } from 'lucide-react';
 import { SizeSelector, type SizeOption } from './size-selector';
 import type { GridOption } from './sticker-canvas';
-import { GridSelector } from './grid-selector';
+import { GridSelector, type GridLayout } from './grid-selector';
 
 type SheetOptionsSelectorProps = {
   sizeOption: SizeOption;
   setSizeOption: (value: SizeOption) => void;
   gridOption: GridOption;
   setGridOption: (value: GridOption) => void;
+  onLayoutChange?: (layout: GridLayout) => void;
 };
 
 export function SheetOptionsSelector({
@@ -20,6 +21,7 @@ export function SheetOptionsSelector({
   setSizeOption,
   gridOption,
   setGridOption,
+  onLayoutChange,
 }: SheetOptionsSelectorProps) {
   return (
     <div className="space-y-6">
@@ -38,6 +40,7 @@ export function SheetOptionsSelector({
           maxRows={8}
           value={gridOption}
           onValueChange={(value) => setGridOption(value as GridOption)}
+          onLayoutChange={onLayoutChange}
         />
       </div>
     </div>

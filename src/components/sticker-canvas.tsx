@@ -10,6 +10,7 @@ import { EditorPanel } from './editor-panel';
 import type { SizeOption as SheetSizeOption } from './size-selector';
 import { cn } from '@/lib/utils';
 import type { StickerShape } from './sticker-studio';
+import type { GridLayout } from './grid-selector';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Rnd } from 'react-rnd';
 import { SafeZonesOverlay, SafeZonesToggle } from './safe-zones-overlay';
@@ -19,6 +20,7 @@ type StickerCanvasProps = {
   setFiles: React.Dispatch<React.SetStateAction<FileWithPreview[]>>;
   sizeOption: SheetSizeOption;
   gridOption: GridOption;
+  gridLayout?: GridLayout;
   product: string;
   shape: StickerShape;
 };
@@ -32,7 +34,7 @@ export interface FileWithPreview extends FileWithPath {
   rotation?: number;
 }
 
-export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product, shape }: StickerCanvasProps) {
+export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLayout, product, shape }: StickerCanvasProps) {
   const { toast } = useToast();
   const [position, setPosition] = React.useState({ x: 0, y: 0 });
   const [scale, setScale] = React.useState(100);
@@ -69,7 +71,39 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
 
   const isSheet = product === 'Sticker Sheet';
   const currentGridOption = isSheet ? gridOption : 1;
-  const { cols, rows } = getGridLayout(currentGridOption);
+  
+  // Use explicit gridLayout when provided, otherwise fall back to calculation
+  const { cols, rows } = React.useMemo(() => {
+    if (isSheet && gridLayout) {
+      return { cols: gridLayout.cols, rows: gridLayout.rows };
+    }
+    return getGridLayout(currentGridOption);
+  }, [isSheet, gridLayout, getGridLayout, currentGridOption]);
+
+  // Validate and adjust grid dimensions to fit within bounds
+  const getAdjustedSpacing = React.useCallback((spacing: number, margin: number, cols: number, rows: number, containerWidth: number, containerHeight: number) => {
+    const minCellSize = 40; // Minimum cell size in pixels
+    const totalMargins = margin * 2;
+    const totalHorizontalSpacing = (cols - 1) * spacing;
+    const totalVerticalSpacing = (rows - 1) * spacing;
+    
+    const availableWidth = containerWidth - totalMargins;
+    const availableHeight = containerHeight - totalMargins;
+    
+    const cellWidth = (availableWidth - totalHorizontalSpacing) / cols;
+    const cellHeight = (availableHeight - totalVerticalSpacing) / rows;
+    
+    if (cellWidth < minCellSize || cellHeight < minCellSize) {
+      // Adjust spacing to ensure minimum cell size
+      const maxHorizontalSpacing = Math.floor((availableWidth - (cols * minCellSize)) / (cols - 1));
+      const maxVerticalSpacing = Math.floor((availableHeight - (rows * minCellSize)) / (rows - 1));
+      const adjustedSpacing = Math.max(0, Math.min(spacing, maxHorizontalSpacing, maxVerticalSpacing));
+      
+      return { spacing: adjustedSpacing, needsAdjustment: adjustedSpacing !== spacing };
+    }
+    
+    return { spacing, needsAdjustment: false };
+  }, []);
 
   const onDrop = React.useCallback(
     (acceptedFiles: FileWithPath[], rejectedFiles: any[]) => {
@@ -310,13 +344,26 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
       const shapeClasses = getShapeClasses(shape);
       const resizeHandleClasses = 'w-3 h-3 bg-accent border-2 border-background rounded-full';
       
+      // Calculate proper spacing and margins from gridLayout
+      const baseSpacing = gridLayout?.spacing ?? 5;
+      const margin = gridLayout?.margin ?? 10;
+      
+      // Get adjusted spacing that ensures grid fits within bounds
+      const { spacing } = getAdjustedSpacing(baseSpacing, margin, cols, rows, rndState.width, rndState.height);
+      
       const stickerGrid = (
-        <div className="w-full h-full relative flex items-center justify-center">
+        <div className="w-full h-full relative flex items-center justify-center overflow-hidden">
             <div 
-                className="w-[90%] h-[90%] grid gap-2"
+                className="grid box-border"
                 style={{
                     gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                    gridTemplateRows: `repeat(${rows}, 1fr)`
+                    gridTemplateRows: `repeat(${rows}, 1fr)`,
+                    gap: `${spacing}px`,
+                    padding: `${margin}px`,
+                    width: '100%',
+                    height: '100%',
+                    maxWidth: '100%',
+                    maxHeight: '100%'
                 }}
             >
               {Array.from({ length: gridOption }).map((_, index) => {
@@ -324,7 +371,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
                 return (
                   <TooltipProvider key={index}>
                     <div
-                      className={cn('relative border-2 border-dashed border-border/30 flex items-center justify-center group aspect-square', shapeClasses, {
+                      className={cn('relative border-2 border-dashed border-border/30 flex items-center justify-center group min-h-0 min-w-0', shapeClasses, {
                         'bg-card/50': file,
                         'bg-muted/20': !file,
                         'ring-2 ring-accent ring-offset-1': selectedCellIndex === index,
@@ -336,9 +383,10 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
                           <img
                             src={file.preview}
                             alt={file.name}
-                            className="max-w-full max-h-full object-contain p-1 transition-transform duration-200"
+                            className="w-full h-full object-contain transition-transform duration-200"
                             style={{
                               transform: `scale(${(file.scale || 100) / 100}) rotate(${file.rotation || 0}deg)`,
+                              padding: '2px'
                             }}
                           />
                           
