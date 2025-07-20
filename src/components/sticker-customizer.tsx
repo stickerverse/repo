@@ -26,15 +26,6 @@ export default function StickerCustomizer() {
 
   return (
     <div className="w-full">
-      <header className="text-center mb-12">
-        <h2 className="text-4xl md:text-5xl font-bold font-headline text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-          Print customized stickers
-        </h2>
-        <p className="text-gray-400 mt-2">
-          Choose your desired cutline, size, quantity and material. Upload your design and go to our editor.
-        </p>
-      </header>
-      
       <div className="p-1 rounded-lg mb-8 shadow-2xl shadow-cyan-500/20">
         <Card className="bg-slate-950/80 backdrop-blur-sm border-0">
           <CardContent className="p-6">
