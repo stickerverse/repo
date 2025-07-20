@@ -26,7 +26,7 @@ export default function StickerCustomizer() {
   const [quantity, setQuantity] = useState('55');
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const [sheetSizeOption, setSheetSizeOption] = useState<SheetSizeOption>('Vertical Sheet');
-  const [gridOption, setGridOption] = useState<GridOption>(4);
+  const [gridOption, setGridOption] = useState<GridOption>(12);
 
 
   return (

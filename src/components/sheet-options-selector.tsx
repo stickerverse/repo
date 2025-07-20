@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Grid3X3, RectangleHorizontal, RectangleVertical } from 'lucide-react';
 import type { SizeOption } from './size-selector';
 import type { GridOption } from './sticker-canvas';
+import { GridSelector } from './grid-selector';
 
 type SheetOptionsSelectorProps = {
   sizeOption: SizeOption;
@@ -48,20 +49,12 @@ export function SheetOptionsSelector({
 
       <div className="space-y-2">
         <Label className="text-sm font-medium text-foreground">Grid Layout</Label>
-        <div className="grid grid-cols-3 gap-2">
-          {([4, 6, 9, 12, 16] as GridOption[]).map((count) => (
-            <Button
-              key={count}
-              variant={gridOption === count ? 'secondary' : 'outline'}
-              size="sm"
-              onClick={() => setGridOption(count)}
-              className="flex items-center gap-2 min-w-[60px]"
-            >
-              <Grid3X3 className="h-3 w-3" />
-              {`${count}`}
-            </Button>
-          ))}
-        </div>
+        <GridSelector 
+          maxCols={5}
+          maxRows={5}
+          value={gridOption}
+          onValueChange={(value) => setGridOption(value as GridOption)}
+        />
       </div>
     </div>
   );

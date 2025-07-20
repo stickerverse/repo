@@ -17,7 +17,7 @@ type StickerCanvasProps = {
   product: string;
 };
 
-export type GridOption = 1 | 4 | 6 | 9 | 12 | 16;
+export type GridOption = number;
 
 interface FileWithPreview extends FileWithPath {
   preview?: string;
@@ -32,14 +32,24 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
   const dragStart = useRef({ x: 0, y: 0 });
   const imageRef = useRef<HTMLDivElement>(null);
 
-  const getGridLayout = (count: number) => {
-    switch (count) {
-      case 4: return { cols: 2, rows: 2 };
-      case 6: return { cols: 3, rows: 2 };
-      case 9: return { cols: 3, rows: 3 };
-      case 12: return { cols: 4, rows: 3 };
-      case 16: return { cols: 4, rows: 4 };
-      default: return { cols: 1, rows: 1 };
+  const getGridLayout = (count: GridOption) => {
+    if (count <= 1) return { cols: 1, rows: 1 };
+  
+    let bestFactor = 1;
+    for (let i = 2; i * i <= count; i++) {
+      if (count % i === 0) {
+        bestFactor = i;
+      }
+    }
+  
+    const otherFactor = count / bestFactor;
+    const isVertical = sizeOption === 'Vertical Sheet';
+    
+    // Prioritize more columns for horizontal, more rows for vertical
+    if (isVertical) {
+      return { cols: Math.min(bestFactor, otherFactor), rows: Math.max(bestFactor, otherFactor) };
+    } else {
+      return { cols: Math.max(bestFactor, otherFactor), rows: Math.min(bestFactor, otherFactor) };
     }
   };
 
@@ -219,7 +229,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
     }
     
     return null;
-  }, [files, position, rotation, scale, gridOption, isSheet, getGridLayout]);
+  }, [files, position, rotation, scale, gridOption, isSheet, sizeOption, getGridLayout, removeFile, getRootProps]);
 
   const getCanvasAspect = () => {
     if (!isSheet) return 'aspect-square';
