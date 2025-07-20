@@ -94,10 +94,115 @@ export default {
             height: '0',
           },
         },
+        first: {
+          "0%": {
+            transform: "translate(0) rotate(0deg)",
+          },
+          "20%": {
+            transform: "translate(-100px, 100px) rotate(-30deg)",
+          },
+          "40%": {
+            transform: "translate(100px, -100px) rotate(30deg)",
+          },
+          "60%": {
+            transform: "translate(-50px, 50px) rotate(-15deg)",
+          },
+          "80%": {
+            transform: "translate(50px, -50px) rotate(15deg)",
+          },
+          "100%": {
+            transform: "translate(0) rotate(0deg)",
+          },
+        },
+        second: {
+          "0%": {
+            transform: "translate(0) rotate(0deg)",
+          },
+          "20%": {
+            transform: "translate(100px, -100px) rotate(45deg)",
+          },
+          "40%": {
+            transform: "translate(-100px, 100px) rotate(-45deg)",
+          },
+          "60%": {
+            transform: "translate(50px, -50px) rotate(22deg)",
+          },
+          "80%": {
+            transform: "translate(-50px, 50px) rotate(-22deg)",
+          },
+          "100%": {
+            transform: "translate(0) rotate(0deg)",
+          },
+        },
+        third: {
+          "0%": {
+            transform: "translate(0) rotate(0deg)",
+          },
+          "20%": {
+            transform: "translate(50px, -50px) rotate(-20deg)",
+          },
+          "40%": {
+            transform: "translate(-50px, 50px) rotate(20deg)",
+          },
+          "60%": {
+            transform: "translate(25px, -25px) rotate(-10deg)",
+          },
+          "80%": {
+            transform: "translate(-25px, 25px) rotate(10deg)",
+          },
+          "100%": {
+            transform: "translate(0) rotate(0deg)",
+          },
+        },
+        fourth: {
+          "0%": {
+            transform: "translate(0) rotate(0deg)",
+          },
+          "20%": {
+            transform: "translate(-150px, 50px) rotate(35deg)",
+          },
+          "40%": {
+            transform: "translate(150px, -50px) rotate(-35deg)",
+          },
+          "60%": {
+            transform: "translate(-75px, 25px) rotate(17deg)",
+          },
+          "80%": {
+            transform: "translate(75px, -25px) rotate(-17deg)",
+          },
+          "100%": {
+            transform: "translate(0) rotate(0deg)",
+          },
+        },
+        fifth: {
+          "0%": {
+            transform: "translate(0) rotate(0deg)",
+          },
+          "20%": {
+            transform: "translate(120px, 120px) rotate(-50deg)",
+          },
+          "40%": {
+            transform: "translate(-120px, -120px) rotate(50deg)",
+          },
+          "60%": {
+            transform: "translate(60px, 60px) rotate(-25deg)",
+          },
+          "80%": {
+            transform: "translate(-60px, -60px) rotate(25deg)",
+          },
+          "100%": {
+            transform: "translate(0) rotate(0deg)",
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        first: "first 15s ease-in-out infinite",
+        second: "second 15s ease-in-out infinite",
+        third: "third 15s ease-in-out infinite",
+        fourth: "fourth 15s ease-in-out infinite",
+        fifth: "fifth 15s ease-in-out infinite",
       },
        backgroundImage: {
         "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
