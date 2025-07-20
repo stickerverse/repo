@@ -53,7 +53,7 @@ export function EditorPanel({
   const [borderRadius, setBorderRadius] = useState(8);
   const [opacity, setOpacity] = useState(100);
 
-  const ColorPicker = ({ value, onChange, label }) => (
+  const ColorPicker = ({ value, onChange, label }: { value: string; onChange: (value: string) => void; label: string }) => (
     <div className="space-y-2">
       <label className="text-sm font-medium text-muted-foreground">{label}</label>
       <div className="flex items-center space-x-2">
@@ -74,7 +74,15 @@ export function EditorPanel({
     </div>
   );
 
-  const Slider = ({ label, value, onChange, min = 0, max = 100, step = 1, unit = '' }) => (
+  const Slider = ({ label, value, onChange, min = 0, max = 100, step = 1, unit = '' }: { 
+    label: string; 
+    value: number; 
+    onChange: (value: number) => void; 
+    min?: number; 
+    max?: number; 
+    step?: number; 
+    unit?: string; 
+  }) => (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
         <label className="text-sm font-medium text-muted-foreground">{label}</label>

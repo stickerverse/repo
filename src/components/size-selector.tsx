@@ -4,10 +4,12 @@
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Input } from './ui/input';
+import { Button } from './ui/button';
+import { useState } from 'react';
 
-export type SizeOption = 'Horizontal Sheet' | 'Vertical Sheet';
+export type SizeOption = 'Horizontal Sheet' | 'Vertical Sheet' | 'A4' | 'US Letter' | '5x7' | '6x9' | 'Custom size';
 
 type SizeSelectorProps = {
   value: string;
@@ -24,26 +26,95 @@ const sizes = [
     'Custom size',
 ];
 
-const sheetSizes: SizeOption[] = [
-  'Vertical Sheet',
-  'Horizontal Sheet',
+const sheetSizes = [
+  { 
+    name: 'A4', 
+    dimensions: '8.3" x 11.7"',
+    aspectRatio: 8.3 / 11.7,
+    description: 'Standard A4 size'
+  },
+  { 
+    name: 'US Letter', 
+    dimensions: '8.5" x 11"',
+    aspectRatio: 8.5 / 11,
+    description: 'Standard US Letter'
+  },
+  { 
+    name: '5x7', 
+    dimensions: '5" x 7"',
+    aspectRatio: 5 / 7,
+    description: 'Compact sheet'
+  },
+  { 
+    name: '6x9', 
+    dimensions: '6" x 9"',
+    aspectRatio: 6 / 9,
+    description: 'Medium sheet'
+  },
+  { 
+    name: 'Custom size', 
+    dimensions: 'Custom',
+    aspectRatio: 1,
+    description: 'Define your own'
+  },
 ];
 
 export function SizeSelector({ value, onValueChange, product }: SizeSelectorProps) {
   const isStickerSheet = product === 'Sticker Sheet';
+  const [isMetric, setIsMetric] = useState(false);
+  const [customWidth, setCustomWidth] = useState('');
+  const [customHeight, setCustomHeight] = useState('');
+  
   const displaySizes = isStickerSheet ? sheetSizes : sizes;
   const isCustomSelected = value === 'Custom size';
 
+  const convertDimensions = (dimensions: string) => {
+    if (!isMetric || dimensions === 'Custom') return dimensions;
+    
+    return dimensions.replace(/(\d+\.?\d*)" x (\d+\.?\d*)"/g, (match, width, height) => {
+      const widthCm = (parseFloat(width) * 2.54).toFixed(1);
+      const heightCm = (parseFloat(height) * 2.54).toFixed(1);
+      return `${widthCm}cm x ${heightCm}cm`;
+    });
+  };
+
   return (
     <div className="space-y-4">
-      <Label className="text-xl font-black text-white mb-3 block">Size (WxH)</Label>
+      <div className="flex items-center justify-between">
+        <Label className="text-xl font-black text-white">Sheet Size</Label>
+        {isStickerSheet && (
+          <div className="flex items-center gap-2">
+            <span className={cn("text-sm font-medium", !isMetric ? "text-accent" : "text-white/70")}>
+              Inches
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMetric(!isMetric)}
+              className="p-0 h-6 w-12"
+            >
+              {isMetric ? (
+                <ToggleRight className="h-6 w-6 text-accent" />
+              ) : (
+                <ToggleLeft className="h-6 w-6 text-white/50" />
+              )}
+            </Button>
+            <span className={cn("text-sm font-medium", isMetric ? "text-accent" : "text-white/70")}>
+              Metric
+            </span>
+          </div>
+        )}
+      </div>
+
       <div className={cn("grid gap-3 sm:gap-4", isStickerSheet ? "grid-cols-2" : "grid-cols-3")}>
         {displaySizes.map((size) => {
-          const isSelected = value === size;
+          const sizeData = typeof size === 'object' ? size : { name: size, dimensions: '', description: '' };
+          const isSelected = value === sizeData.name;
+          
           return (
-            <div key={size} className="relative">
+            <div key={sizeData.name} className="relative">
               <Card
-                onClick={() => onValueChange(size)}
+                onClick={() => onValueChange(sizeData.name)}
                 className={cn(
                   'cursor-pointer transition-all duration-300 group border rounded-xl relative backdrop-blur-sm',
                   isSelected
@@ -57,33 +128,67 @@ export function SizeSelector({ value, onValueChange, product }: SizeSelectorProp
                     <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-accent fill-accent/20" />
                   </div>
                 )}
-                <CardContent className="p-3 flex flex-col items-center justify-center text-center h-full min-h-[70px]">
-                   <h3 className={cn(
-                    'font-semibold text-base transition-colors duration-200 line-clamp-1',
+                <CardContent className="p-3 flex flex-col items-center justify-center text-center h-full min-h-[90px]">
+                  <h3 className={cn(
+                    'font-semibold text-base transition-colors duration-200 line-clamp-1 mb-1',
                     isSelected 
                       ? 'font-extrabold text-accent' 
                       : 'text-foreground group-hover:text-accent'
                   )}>
-                    {size}
+                    {sizeData.name}
                   </h3>
+                  {isStickerSheet && sizeData.dimensions && (
+                    <div className="text-xs text-white/60 space-y-1">
+                      <div className="font-mono">
+                        {convertDimensions(sizeData.dimensions)}
+                      </div>
+                      <div className="text-white/40">
+                        {sizeData.description}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
           );
         })}
       </div>
-       {isCustomSelected && !isStickerSheet && (
+
+      {isCustomSelected && (
         <div className="mt-4 space-y-4">
-           <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className='space-y-2'>
-              <Label htmlFor="custom-width" className="text-sm font-medium text-white">Width (in)</Label>
-              <Input id="custom-width" type="number" placeholder='e.g. 3.5' className="bg-white/20 border-white/30 text-white placeholder:text-gray-400 focus:ring-cyan-400" />
+              <Label htmlFor="custom-width" className="text-sm font-medium text-white">
+                Width ({isMetric ? 'cm' : 'in'})
+              </Label>
+              <Input 
+                id="custom-width" 
+                type="number" 
+                value={customWidth}
+                onChange={(e) => setCustomWidth(e.target.value)}
+                placeholder={isMetric ? 'e.g. 21.0' : 'e.g. 8.5'} 
+                className="bg-white/20 border-white/30 text-white placeholder:text-gray-400 focus:ring-cyan-400" 
+              />
             </div>
-             <div className='space-y-2'>
-              <Label htmlFor="custom-height" className="text-sm font-medium text-white">Height (in)</Label>
-              <Input id="custom-height" type="number" placeholder='e.g. 4' className="bg-white/20 border-white/30 text-white placeholder:text-gray-400 focus:ring-cyan-400" />
+            <div className='space-y-2'>
+              <Label htmlFor="custom-height" className="text-sm font-medium text-white">
+                Height ({isMetric ? 'cm' : 'in'})
+              </Label>
+              <Input 
+                id="custom-height" 
+                type="number" 
+                value={customHeight}
+                onChange={(e) => setCustomHeight(e.target.value)}
+                placeholder={isMetric ? 'e.g. 29.7' : 'e.g. 11'} 
+                className="bg-white/20 border-white/30 text-white placeholder:text-gray-400 focus:ring-cyan-400" 
+              />
             </div>
           </div>
+          {customWidth && customHeight && (
+            <div className="text-center text-accent text-sm font-medium">
+              Preview: {customWidth} x {customHeight} {isMetric ? 'cm' : 'in'}
+            </div>
+          )}
         </div>
       )}
     </div>

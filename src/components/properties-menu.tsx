@@ -39,10 +39,16 @@ export function PropertiesMenu({
         <CardContent className="p-0">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-x-8 gap-y-12">
             <div className="md:col-span-3">
-              <ShapeSelector value={shape} onValueChange={setShape} />
+              <ShapeSelector 
+                value={shape} 
+                onValueChange={(value: string) => setShape(value as any)} 
+              />
             </div>
             <div className="md:col-span-6">
-              <MaterialSelector value={material} onValueChange={setMaterial} />
+              <MaterialSelector 
+                value={material} 
+                onValueChange={(value: string) => setMaterial(value as any)} 
+              />
             </div>
             <div className="md:col-span-3">
               <FinishPricingSelector value={finish} onValueChange={setFinish} />

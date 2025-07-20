@@ -1,19 +1,20 @@
 
 'use client';
 
-import React, from 'react';
+import React from 'react';
 import { useDropzone, type FileWithPath } from 'react-dropzone';
-import { UploadCloud, X, Image, Sparkles, Zap } from 'lucide-react';
+import { UploadCloud, X, Image, Sparkles, Zap, Copy, RotateCcw, Move, Maximize2, Trash2, Replace } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { EditorPanel } from './editor-panel';
 import type { SizeOption as SheetSizeOption } from './size-selector';
 import { cn } from '@/lib/utils';
 import type { StickerShape } from './sticker-studio';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type StickerCanvasProps = {
-  files: FileWithPath[];
-  setFiles: React.Dispatch<React.SetStateAction<FileWithPath[]>>;
+  files: FileWithPreview[];
+  setFiles: React.Dispatch<React.SetStateAction<FileWithPreview[]>>;
   sizeOption: SheetSizeOption;
   gridOption: GridOption;
   product: string;
@@ -22,8 +23,11 @@ type StickerCanvasProps = {
 
 export type GridOption = number;
 
-interface FileWithPreview extends FileWithPath {
+export interface FileWithPreview extends FileWithPath {
   preview?: string;
+  position?: { x: number; y: number };
+  scale?: number;
+  rotation?: number;
 }
 
 export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product, shape }: StickerCanvasProps) {
@@ -31,6 +35,8 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
   const [position, setPosition] = React.useState({ x: 0, y: 0 });
   const [scale, setScale] = React.useState(100);
   const [rotation, setRotation] = React.useState(0);
+  const [selectedCellIndex, setSelectedCellIndex] = React.useState<number | null>(null);
+  const [isDragMode, setIsDragMode] = React.useState(false);
   const isDragging = React.useRef(false);
   const dragStart = React.useRef({ x: 0, y: 0 });
   const imageRef = React.useRef<HTMLDivElement>(null);
@@ -67,7 +73,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
         toast({
           variant: 'destructive',
           title: 'Upload Error',
-          description: 'Only PNG files are accepted. Please try again.',
+          description: 'Only PNG, JPG, SVG, and WebP files are accepted. Please try again.',
         });
         return;
       }
@@ -95,7 +101,12 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'image/png': ['.png'] },
+    accept: { 
+      'image/png': ['.png'],
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/svg+xml': ['.svg'],
+      'image/webp': ['.webp']
+    },
     maxFiles: isSheet ? currentGridOption - files.length : 1 - files.length,
     multiple: isSheet,
     noClick: files.length >= currentGridOption,
@@ -117,6 +128,60 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
       });
       setFiles([]);
     }
+  }, [files, setFiles]);
+
+  const duplicateToAllCells = React.useCallback((sourceIndex: number) => {
+    const sourceFile = files[sourceIndex];
+    if (!sourceFile?.preview || !isSheet) return;
+
+    const newFiles = Array.from({ length: gridOption }, (_, index) => {
+      if (index === sourceIndex) return sourceFile;
+      
+      if (files[index]) {
+        if (files[index].preview) {
+          URL.revokeObjectURL(files[index].preview);
+        }
+      }
+      
+      return Object.assign(new File([sourceFile], sourceFile.name, { type: sourceFile.type }), {
+        preview: sourceFile.preview,
+        position: sourceFile.position || { x: 0, y: 0 },
+        scale: sourceFile.scale || 100,
+        rotation: sourceFile.rotation || 0,
+      });
+    });
+
+    setFiles(newFiles);
+    toast({
+      title: 'Design Duplicated',
+      description: `Applied "${sourceFile.name}" to all ${gridOption} cells`,
+    });
+  }, [files, isSheet, gridOption, setFiles, toast]);
+
+  const replaceFileInCell = React.useCallback((cellIndex: number, newFile: FileWithPath) => {
+    if (files[cellIndex]?.preview) {
+      URL.revokeObjectURL(files[cellIndex].preview);
+    }
+    
+    const updatedFiles = [...files];
+    updatedFiles[cellIndex] = Object.assign(newFile, {
+      preview: URL.createObjectURL(newFile),
+    });
+    
+    setFiles(updatedFiles);
+  }, [files, setFiles]);
+
+  const centerImageInCell = React.useCallback((cellIndex: number) => {
+    if (!files[cellIndex]) return;
+    
+    const updatedFiles = [...files];
+    updatedFiles[cellIndex] = Object.assign(updatedFiles[cellIndex], {
+      position: { x: 0, y: 0 },
+      scale: 100,
+      rotation: 0,
+    });
+    
+    setFiles(updatedFiles);
   }, [files, setFiles]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -208,43 +273,110 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
               {Array.from({ length: gridOption }).map((_, index) => {
                 const file = files[index];
                 return (
-                  <div
-                    key={index}
-                    className={cn('relative border-2 border-dashed border-border/30 flex items-center justify-center group aspect-square', shapeClasses, {
-                      'bg-card/50': file,
-                      'bg-muted/20': !file,
-                    })}
-                  >
-                    {file?.preview ? (
-                      <>
-                        <img
-                          src={file.preview}
-                          alt={file.name}
-                          className="max-w-full max-h-full object-contain p-1"
-                        />
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-1 right-1 z-20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 shadow-lg h-6 w-6"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeFile(index);
-                          }}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </>
-                    ) : (
-                       <div {...getRootProps({ className: 'w-full h-full' })}>
-                        <div className="text-center text-muted-foreground text-xs flex flex-col items-center justify-center h-full cursor-pointer hover:bg-accent/10 rounded-lg">
-                          <div className="w-8 h-8 mx-auto mb-1 rounded-lg border-2 border-dashed border-border/50 flex items-center justify-center">
-                            <Image className="w-4 h-4 text-muted-foreground" />
+                  <TooltipProvider key={index}>
+                    <div
+                      className={cn('relative border-2 border-dashed border-border/30 flex items-center justify-center group aspect-square', shapeClasses, {
+                        'bg-card/50': file,
+                        'bg-muted/20': !file,
+                        'ring-2 ring-accent ring-offset-1': selectedCellIndex === index,
+                      })}
+                      onClick={() => setSelectedCellIndex(selectedCellIndex === index ? null : index)}
+                    >
+                      {file?.preview ? (
+                        <>
+                          <img
+                            src={file.preview}
+                            alt={file.name}
+                            className="max-w-full max-h-full object-contain p-1 transition-transform duration-200"
+                            style={{
+                              transform: `scale(${(file.scale || 100) / 100}) rotate(${file.rotation || 0}deg)`,
+                            }}
+                          />
+                          
+                          {/* Hover Controls */}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200 rounded-lg flex items-center justify-center">
+                            <div className="flex gap-1">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="secondary"
+                                    size="icon"
+                                    className="h-6 w-6 bg-card/90 hover:bg-card"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      duplicateToAllCells(index);
+                                    }}
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Apply to all cells</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="secondary"
+                                    size="icon"
+                                    className="h-6 w-6 bg-card/90 hover:bg-card"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      centerImageInCell(index);
+                                    }}
+                                  >
+                                    <Maximize2 className="h-3 w-3" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Center & reset</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="destructive"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      removeFile(index);
+                                    }}
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Remove image</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
                           </div>
-                          Drop image
+                          
+                          {/* Cell Number Badge */}
+                          <div className="absolute top-1 left-1 bg-accent text-accent-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold opacity-70">
+                            {index + 1}
+                          </div>
+                        </>
+                      ) : (
+                         <div {...getRootProps({ className: 'w-full h-full' })}>
+                          <div className="text-center text-muted-foreground text-xs flex flex-col items-center justify-center h-full cursor-pointer hover:bg-accent/10 rounded-lg transition-colors">
+                            <div className="w-8 h-8 mx-auto mb-1 rounded-lg border-2 border-dashed border-border/50 flex items-center justify-center">
+                              <Image className="w-4 h-4 text-muted-foreground" />
+                            </div>
+                            <span className="text-[10px]">Drop or click</span>
+                            
+                            {/* Cell Number Badge for Empty Cells */}
+                            <div className="absolute top-1 left-1 bg-muted text-muted-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold opacity-50">
+                              {index + 1}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
+                  </TooltipProvider>
                 );
               })}
             </div>
@@ -295,19 +427,19 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
             
             <p className="text-base mb-4">
               {isDragActive 
-                ? 'Release to upload your file' 
-                : "Drag 'n' drop a PNG file here, or click to select"
+                ? 'Release to upload your files' 
+                : "Drag 'n' drop image files here, or click to select"
               }
             </p>
             
             <div className="flex items-center justify-center gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <Zap className="h-3 w-3 text-accent" />
-                <span>PNG format</span>
+                <span>PNG, JPG, SVG</span>
               </div>
               <div className="flex items-center gap-1">
                 <Sparkles className="h-3 w-3 text-accent" />
-                <span>Transparent backgrounds</span>
+                <span>Multiple formats</span>
               </div>
             </div>
             
