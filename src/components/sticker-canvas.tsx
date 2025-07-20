@@ -1,9 +1,9 @@
 
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { useDropzone, type FileWithPath } from 'react-dropzone';
-import { UploadCloud, X, Image, Sparkles, Zap, Copy, RotateCcw, Move, Maximize2, Trash2, Replace } from 'lucide-react';
+import { UploadCloud, X, Image, Sparkles, Zap, Copy, RotateCcw, Move, Maximize2, Trash2, Replace, ZoomIn, ZoomOut, Eye, Minimize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { EditorPanel } from './editor-panel';
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import type { StickerShape } from './sticker-studio';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Rnd } from 'react-rnd';
+import { SafeZonesOverlay, SafeZonesToggle } from './safe-zones-overlay';
 
 type StickerCanvasProps = {
   files: FileWithPreview[];
@@ -41,6 +42,9 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
   const isDragging = React.useRef(false);
   const dragStart = React.useRef({ x: 0, y: 0 });
   const imageRef = React.useRef<HTMLDivElement>(null);
+  const [showSafeZones, setShowSafeZones] = React.useState(false);
+  const [rndState, setRndState] = React.useState({ width: 400, height: 500, x: 50, y: 50 });
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const getGridLayout = React.useCallback((count: GridOption) => {
     if (count <= 1) return { cols: 1, rows: 1 };
@@ -67,6 +71,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
 
   const isSheet = product === 'Sticker Sheet';
   const currentGridOption = isSheet ? gridOption : 1;
+  const { cols, rows } = getGridLayout(currentGridOption);
 
   const onDrop = React.useCallback(
     (acceptedFiles: FileWithPath[], rejectedFiles: any[]) => {
@@ -225,6 +230,45 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
     }
   };
 
+  const handleFitToView = () => {
+    if (!canvasRef.current) return;
+    const canvasBounds = canvasRef.current.getBoundingClientRect();
+    const padding = 20;
+    const availableWidth = canvasBounds.width - padding * 2;
+    const availableHeight = canvasBounds.height - padding * 2;
+    const sheetAspectRatio = rndState.width / rndState.height;
+
+    let newWidth, newHeight;
+    if (availableWidth / sheetAspectRatio <= availableHeight) {
+        newWidth = availableWidth;
+        newHeight = availableWidth / sheetAspectRatio;
+    } else {
+        newHeight = availableHeight;
+        newWidth = availableHeight * sheetAspectRatio;
+    }
+
+    setRndState({
+      width: newWidth,
+      height: newHeight,
+      x: (canvasBounds.width - newWidth) / 2,
+      y: (canvasBounds.height - newHeight) / 2
+    });
+  };
+
+  const handleZoom = (factor: number) => {
+    if (!canvasRef.current) return;
+    const canvasBounds = canvasRef.current.getBoundingClientRect();
+    const newWidth = Math.max(100, rndState.width * factor);
+    const newHeight = Math.max(100, rndState.height * factor);
+
+    setRndState(prevState => ({
+      width: newWidth,
+      height: newHeight,
+      x: (canvasBounds.width - newWidth) / 2,
+      y: (canvasBounds.height - newHeight) / 2
+    }));
+  }
+
   const filePreview = React.useMemo(() => {
     if (files.length === 0 && !isSheet) return null;
     
@@ -259,12 +303,12 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
     }
     
     if (isSheet) {
-      const { cols, rows } = getGridLayout(gridOption);
       const shapeClasses = getShapeClasses(shape);
+      const resizeHandleClasses = 'w-3 h-3 bg-accent border-2 border-background rounded-full';
       
       const stickerGrid = (
         <div 
-            className="w-full h-full grid gap-2"
+            className="w-full h-full grid gap-2 p-1"
             style={{
                 gridTemplateColumns: `repeat(${cols}, 1fr)`,
                 gridTemplateRows: `repeat(${rows}, 1fr)`
@@ -384,30 +428,46 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
 
       return (
         <Rnd
-          default={{
-            x: 50,
-            y: 50,
-            width: 400,
-            height: 500,
+          size={{ width: rndState.width, height: rndState.height }}
+          position={{ x: rndState.x, y: rndState.y }}
+          onDragStop={(e, d) => { setRndState(prev => ({ ...prev, x: d.x, y: d.y })) }}
+          onResizeStop={(e, direction, ref, delta, position) => {
+            setRndState({
+              width: Number(ref.style.width),
+              height: Number(ref.style.height),
+              ...position,
+            });
           }}
           bounds="parent"
           minWidth={200}
           minHeight={200}
-          style={{
-            border: "2px dashed hsl(var(--border))",
-            borderRadius: "0.5rem",
-            overflow: "hidden",
+          className="border-2 border-dashed border-accent flex items-center justify-center rounded-lg overflow-hidden group"
+          resizeHandleComponent={{
+            topLeft: <div className={cn(resizeHandleClasses, 'cursor-nwse-resize')} />,
+            topRight: <div className={cn(resizeHandleClasses, 'cursor-nesw-resize')} />,
+            bottomLeft: <div className={cn(resizeHandleClasses, 'cursor-nesw-resize')} />,
+            bottomRight: <div className={cn(resizeHandleClasses, 'cursor-nwse-resize')} />,
+            top: <div className="w-8 h-2 bg-accent/80 rounded-full cursor-ns-resize" />,
+            right: <div className="w-2 h-8 bg-accent/80 rounded-full cursor-ew-resize" />,
+            bottom: <div className="w-8 h-2 bg-accent/80 rounded-full cursor-ns-resize" />,
+            left: <div className="w-2 h-8 bg-accent/80 rounded-full cursor-ew-resize" />,
           }}
-          className="flex items-center justify-center"
         >
           {stickerGrid}
+          <SafeZonesOverlay 
+            isVisible={showSafeZones} 
+            canvasWidth={rndState.width}
+            canvasHeight={rndState.height}
+            gridCols={cols}
+            gridRows={rows}
+          />
         </Rnd>
       );
     }
     
     return null;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [files, isSheet, position, rotation, scale, gridOption, getGridLayout, removeFile, getRootProps, shape]);
+  }, [files, isSheet, position, rotation, scale, gridOption, getGridLayout, removeFile, getRootProps, shape, rndState, showSafeZones, cols, rows]);
 
   const getCanvasAspect = () => {
     if (!isSheet) return 'aspect-square';
@@ -419,7 +479,10 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
 
   return (
     <div className="space-y-6">
-      <div className={cn("relative w-full h-[700px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg", getCanvasAspect())}>
+      <div 
+        ref={canvasRef}
+        className={cn("relative w-full h-[700px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg", getCanvasAspect())}
+      >
       
       <div {...getRootProps({ 
         className: cn('w-full h-full flex items-center justify-center transition-all duration-300', {
@@ -475,16 +538,27 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
           </div>
         )}
 
+        {isSheet && files.length < currentGridOption && (
+          <div className="text-center p-8 text-muted-foreground relative z-10">
+             <h3 className="font-bold text-lg text-foreground mb-2">
+              Sticker Sheet ({cols}x{rows})
+            </h3>
+            <p className="text-base mb-4">
+              Drop images onto the grid cells or click to upload.
+            </p>
+          </div>
+        )}
+
         {files.length > 0 && (
            <div className="absolute bottom-4 left-4 bg-card/80 backdrop-blur-sm border border-border rounded-lg p-3 opacity-100 group-hover:opacity-100 transition-all duration-200 z-20 max-w-xs">
             <div className="flex items-center gap-2 text-base mb-1">
               <Image className="h-4 w-4 text-accent" />
               <span className="font-medium text-foreground">
-                {files.length === 1 ? files[0].name : `${files.length} file${files.length > 1 ? 's' : ''} uploaded`}
+                {files.length === 1 && !isSheet ? files[0].name : `${files.length} file${files.length > 1 ? 's' : ''} uploaded`}
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
-              {files.length === 1 
+              {files.length === 1 && !isSheet 
                 ? `${(files[0].size / 1024).toFixed(1)} KB`
                 : `${(files.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)).toFixed(2)} MB total`
               }
@@ -510,6 +584,38 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
               setRotation={setRotation}
             />
           </div>
+        </div>
+      )}
+
+      {isSheet && (
+        <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+           <SafeZonesToggle isVisible={showSafeZones} onToggle={setShowSafeZones} />
+           <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={() => handleZoom(1.1)} className="h-8 w-8 p-0">
+                  <ZoomIn className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent><p>Zoom In</p></TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={() => handleZoom(0.9)} className="h-8 w-8 p-0">
+                  <ZoomOut className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent><p>Zoom Out</p></TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={handleFitToView} className="h-8 w-8 p-0">
+                  <Minimize className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent><p>Fit to View</p></TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       )}
       
