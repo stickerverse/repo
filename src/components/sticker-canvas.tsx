@@ -1,13 +1,14 @@
 
 'use client';
 
-import React, { useCallback, useMemo, useState, useRef } from 'react';
+import React, from 'react';
 import { useDropzone, type FileWithPath } from 'react-dropzone';
-import { UploadCloud, X, Image, Sparkles, Zap, Grid3X3, RectangleHorizontal, RectangleVertical } from 'lucide-react';
+import { UploadCloud, X, Image, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { EditorPanel } from './editor-panel';
 import type { SizeOption as SheetSizeOption } from './size-selector';
+import { cn } from '@/lib/utils';
 
 type StickerCanvasProps = {
   files: FileWithPath[];
@@ -25,17 +26,16 @@ interface FileWithPreview extends FileWithPath {
 
 export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product }: StickerCanvasProps) {
   const { toast } = useToast();
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [scale, setScale] = useState(100);
-  const [rotation, setRotation] = useState(0);
-  const isDragging = useRef(false);
-  const dragStart = useRef({ x: 0, y: 0 });
-  const imageRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = React.useState({ x: 0, y: 0 });
+  const [scale, setScale] = React.useState(100);
+  const [rotation, setRotation] = React.useState(0);
+  const isDragging = React.useRef(false);
+  const dragStart = React.useRef({ x: 0, y: 0 });
+  const imageRef = React.useRef<HTMLDivElement>(null);
 
-  const getGridLayout = (count: GridOption) => {
+  const getGridLayout = React.useCallback((count: GridOption) => {
     if (count <= 1) return { cols: 1, rows: 1 };
   
-    // Find factors of the count
     const factors = [];
     for (let i = 1; i <= Math.sqrt(count); i++) {
         if (count % i === 0) {
@@ -45,23 +45,21 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
 
     if (factors.length === 0) return { cols: count, rows: 1};
 
-    // Find the factor pair with the smallest difference (closest to a square)
     let bestFactors = factors[factors.length -1];
     
     const isVertical = sizeOption === 'Vertical Sheet';
     
-    // Prioritize more columns for horizontal, more rows for vertical
     if (isVertical) {
       return { cols: Math.min(bestFactors[0], bestFactors[1]), rows: Math.max(bestFactors[0], bestFactors[1]) };
     } else {
       return { cols: Math.max(bestFactors[0], bestFactors[1]), rows: Math.min(bestFactors[0], bestFactors[1]) };
     }
-  };
+  }, [sizeOption]);
 
   const isSheet = product === 'Sticker Sheet';
   const currentGridOption = isSheet ? gridOption : 1;
 
-  const onDrop = useCallback(
+  const onDrop = React.useCallback(
     (acceptedFiles: FileWithPath[], rejectedFiles: any[]) => {
       if (rejectedFiles.length > 0) {
         toast({
@@ -84,7 +82,6 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
 
       setFiles(prevFiles => [...prevFiles, ...newFiles]);
 
-      // Reset transform on new image only if it's not a sticker sheet
       if (!isSheet) {
         setPosition({ x: 0, y: 0 });
         setScale(100);
@@ -103,7 +100,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
     noKeyboard: files.length >= currentGridOption,
   });
 
-  const removeFile = (indexToRemove?: number) => {
+  const removeFile = React.useCallback((indexToRemove?: number) => {
     if (indexToRemove !== undefined) {
       const fileToRemove = files[indexToRemove];
       if (fileToRemove?.preview) {
@@ -111,7 +108,6 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
       }
       setFiles(files.filter((_, i) => i !== indexToRemove));
     } else {
-      // For single image
       files.forEach(file => {
         if (file.preview) {
           URL.revokeObjectURL(file.preview);
@@ -119,7 +115,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
       });
       setFiles([]);
     }
-  };
+  }, [files, setFiles]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -147,7 +143,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
     window.removeEventListener('mouseup', handleMouseUp);
   };
 
-  const filePreview = useMemo(() => {
+  const filePreview = React.useMemo(() => {
     if (files.length === 0 && !isSheet) return null;
     
     if (!isSheet && files[0]?.preview) {
@@ -193,9 +189,10 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
             return (
               <div
                 key={index}
-                className={`relative border-2 border-dashed border-border/30 rounded-lg flex items-center justify-center group ${
-                  file ? 'bg-card/50' : 'bg-muted/20'
-                }`}
+                className={cn('relative border-2 border-dashed border-border/30 rounded-lg flex items-center justify-center group', {
+                  'bg-card/50': file,
+                  'bg-muted/20': !file,
+                })}
               >
                 {file?.preview ? (
                   <>
@@ -234,7 +231,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
     }
     
     return null;
-  }, [files, isSheet, position, rotation, scale, gridOption, sizeOption, getGridLayout, removeFile, getRootProps]);
+  }, [files, isSheet, position, rotation, scale, gridOption, getGridLayout, removeFile, getRootProps]);
 
   const getCanvasAspect = () => {
     if (!isSheet) return 'aspect-square';
@@ -246,22 +243,23 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
 
   return (
     <div className="space-y-6">
-      <div className={`relative ${getCanvasAspect()} w-full h-[100px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg`}>
+      <div className={cn("relative w-full h-[300px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg", getCanvasAspect())}>
       <div className="absolute inset-0 stars opacity-100 pointer-events-none" />
       
       <div {...getRootProps({ 
-        className: `w-full h-full flex items-center justify-center transition-all duration-300 ${
-          isDragActive ? 'bg-accent/10 scale-105' : ''
-        } ${files.length > 0 || isSheet ? '' : 'cursor-pointer'}` 
+        className: cn('w-full h-full flex items-center justify-center transition-all duration-300', {
+          'bg-accent/10 scale-105': isDragActive,
+          'cursor-pointer': files.length === 0 && !isSheet
+        }) 
       })}>
         <input {...getInputProps()} id="file-upload-input" />
         
         {files.length < currentGridOption && !isSheet && (
           <div className="text-center p-8 text-muted-foreground relative z-10">
             <div className="relative mb-6">
-              <UploadCloud className={`mx-auto h-16 w-16 mb-4 text-accent transition-all duration-300 ${
-                isDragActive ? 'scale-110 animate-bounce' : ''
-              }`} />
+              <UploadCloud className={cn('mx-auto h-16 w-16 mb-4 text-accent transition-all duration-300', {
+                'scale-110 animate-bounce': isDragActive
+              })} />
               {isDragActive && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Sparkles className="h-8 w-8 text-accent animate-spin" />
