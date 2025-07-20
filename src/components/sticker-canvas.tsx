@@ -11,6 +11,7 @@ import type { SizeOption as SheetSizeOption } from './size-selector';
 import { cn } from '@/lib/utils';
 import type { StickerShape } from './sticker-studio';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Rnd } from 'react-rnd';
 
 type StickerCanvasProps = {
   files: FileWithPreview[];
@@ -261,126 +262,146 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
       const { cols, rows } = getGridLayout(gridOption);
       const shapeClasses = getShapeClasses(shape);
       
-      return (
-        <div className="absolute inset-0 flex items-center justify-center">
-            <div 
-                className="w-[90%] h-[90%] grid gap-2"
-                style={{
-                    gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                    gridTemplateRows: `repeat(${rows}, 1fr)`
-                }}
-            >
-              {Array.from({ length: gridOption }).map((_, index) => {
-                const file = files[index];
-                return (
-                  <TooltipProvider key={index}>
-                    <div
-                      className={cn('relative border-2 border-dashed border-border/30 flex items-center justify-center group aspect-square', shapeClasses, {
-                        'bg-card/50': file,
-                        'bg-muted/20': !file,
-                        'ring-2 ring-accent ring-offset-1': selectedCellIndex === index,
-                      })}
-                      onClick={() => setSelectedCellIndex(selectedCellIndex === index ? null : index)}
-                    >
-                      {file?.preview ? (
-                        <>
-                          <img
-                            src={file.preview}
-                            alt={file.name}
-                            className="max-w-full max-h-full object-contain p-1 transition-transform duration-200"
-                            style={{
-                              transform: `scale(${(file.scale || 100) / 100}) rotate(${file.rotation || 0}deg)`,
-                            }}
-                          />
+      const stickerGrid = (
+        <div 
+            className="w-full h-full grid gap-2"
+            style={{
+                gridTemplateColumns: `repeat(${cols}, 1fr)`,
+                gridTemplateRows: `repeat(${rows}, 1fr)`
+            }}
+        >
+          {Array.from({ length: gridOption }).map((_, index) => {
+            const file = files[index];
+            return (
+              <TooltipProvider key={index}>
+                <div
+                  className={cn('relative border-2 border-dashed border-border/30 flex items-center justify-center group aspect-square', shapeClasses, {
+                    'bg-card/50': file,
+                    'bg-muted/20': !file,
+                    'ring-2 ring-accent ring-offset-1': selectedCellIndex === index,
+                  })}
+                  onClick={() => setSelectedCellIndex(selectedCellIndex === index ? null : index)}
+                >
+                  {file?.preview ? (
+                    <>
+                      <img
+                        src={file.preview}
+                        alt={file.name}
+                        className="max-w-full max-h-full object-contain p-1 transition-transform duration-200"
+                        style={{
+                          transform: `scale(${(file.scale || 100) / 100}) rotate(${file.rotation || 0}deg)`,
+                        }}
+                      />
+                      
+                      {/* Hover Controls */}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200 rounded-lg flex items-center justify-center">
+                        <div className="flex gap-1">
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="secondary"
+                                size="icon"
+                                className="h-6 w-6 bg-card/90 hover:bg-card"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  duplicateToAllCells(index);
+                                }}
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Apply to all cells</p>
+                            </TooltipContent>
+                          </Tooltip>
                           
-                          {/* Hover Controls */}
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200 rounded-lg flex items-center justify-center">
-                            <div className="flex gap-1">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="secondary"
-                                    size="icon"
-                                    className="h-6 w-6 bg-card/90 hover:bg-card"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      duplicateToAllCells(index);
-                                    }}
-                                  >
-                                    <Copy className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Apply to all cells</p>
-                                </TooltipContent>
-                              </Tooltip>
-                              
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="secondary"
-                                    size="icon"
-                                    className="h-6 w-6 bg-card/90 hover:bg-card"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      centerImageInCell(index);
-                                    }}
-                                  >
-                                    <Maximize2 className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Center & reset</p>
-                                </TooltipContent>
-                              </Tooltip>
-                              
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="destructive"
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      removeFile(index);
-                                    }}
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Remove image</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </div>
-                          </div>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="secondary"
+                                size="icon"
+                                className="h-6 w-6 bg-card/90 hover:bg-card"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  centerImageInCell(index);
+                                }}
+                              >
+                                <Maximize2 className="h-3 w-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Center & reset</p>
+                            </TooltipContent>
+                          </Tooltip>
                           
-                          {/* Cell Number Badge */}
-                          <div className="absolute top-1 left-1 bg-accent text-accent-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold opacity-70">
-                            {index + 1}
-                          </div>
-                        </>
-                      ) : (
-                         <div {...getRootProps({ className: 'w-full h-full' })}>
-                          <div className="text-center text-muted-foreground text-xs flex flex-col items-center justify-center h-full cursor-pointer hover:bg-accent/10 rounded-lg transition-colors">
-                            <div className="w-8 h-8 mx-auto mb-1 rounded-lg border-2 border-dashed border-border/50 flex items-center justify-center">
-                              <Image className="w-4 h-4 text-muted-foreground" />
-                            </div>
-                            <span className="text-[10px]">Drop or click</span>
-                            
-                            {/* Cell Number Badge for Empty Cells */}
-                            <div className="absolute top-1 left-1 bg-muted text-muted-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold opacity-50">
-                              {index + 1}
-                            </div>
-                          </div>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="h-6 w-6"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeFile(index);
+                                }}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Remove image</p>
+                            </TooltipContent>
+                          </Tooltip>
                         </div>
-                      )}
+                      </div>
+                      
+                      {/* Cell Number Badge */}
+                      <div className="absolute top-1 left-1 bg-accent text-accent-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold opacity-70">
+                        {index + 1}
+                      </div>
+                    </>
+                  ) : (
+                     <div {...getRootProps({ className: 'w-full h-full' })}>
+                      <div className="text-center text-muted-foreground text-xs flex flex-col items-center justify-center h-full cursor-pointer hover:bg-accent/10 rounded-lg transition-colors">
+                        <div className="w-8 h-8 mx-auto mb-1 rounded-lg border-2 border-dashed border-border/50 flex items-center justify-center">
+                          <Image className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                        <span className="text-[10px]">Drop or click</span>
+                        
+                        {/* Cell Number Badge for Empty Cells */}
+                        <div className="absolute top-1 left-1 bg-muted text-muted-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold opacity-50">
+                          {index + 1}
+                        </div>
+                      </div>
                     </div>
-                  </TooltipProvider>
-                );
-              })}
-            </div>
+                  )}
+                </div>
+              </TooltipProvider>
+            );
+          })}
         </div>
+      );
+
+      return (
+        <Rnd
+          default={{
+            x: 50,
+            y: 50,
+            width: 400,
+            height: 500,
+          }}
+          bounds="parent"
+          minWidth={200}
+          minHeight={200}
+          style={{
+            border: "2px dashed hsl(var(--border))",
+            borderRadius: "0.5rem",
+            overflow: "hidden",
+          }}
+          className="flex items-center justify-center"
+        >
+          {stickerGrid}
+        </Rnd>
       );
     }
     
