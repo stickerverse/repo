@@ -206,7 +206,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
             return (
               <div
                 key={index}
-                className={cn('relative border-2 border-dashed border-border/30 flex items-center justify-center group', shapeClasses, {
+                className={cn('relative border-2 border-dashed border-border/30 flex items-center justify-center group aspect-square', shapeClasses, {
                   'bg-card/50': file,
                   'bg-muted/20': !file,
                 })}
