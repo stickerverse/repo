@@ -66,7 +66,7 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
         <Label className="text-xl font-black text-foreground flex items-center gap-2">
           Material
         </Label>
-        <div className="text-xs text-muted-foreground flex items-center gap-1">
+        <div className="text-sm text-muted-foreground flex items-center gap-1">
           <Star className="h-3 w-3 text-accent" />
           {materials.filter(m => m.premium).length} Premium Options
         </div>
@@ -125,7 +125,7 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
 
                   {/* Material Name */}
                   <h3 className={cn(
-                    'font-semibold text-center text-xs sm:text-sm transition-colors duration-200 line-clamp-1',
+                    'font-semibold text-center text-base transition-colors duration-200 line-clamp-1',
                     isSelected 
                       ? 'font-extrabold text-accent' 
                       : 'text-foreground group-hover:text-accent'
@@ -135,7 +135,7 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
 
                   {/* Description */}
                   <p
-                    style={{ fontSize: '0.7rem', lineHeight: '1rem' }}
+                    style={{ fontSize: '0.8rem', lineHeight: '1.1rem' }}
                     className={cn(
                     'text-center mt-1 transition-all duration-200 block px-2',
                     isSelected 

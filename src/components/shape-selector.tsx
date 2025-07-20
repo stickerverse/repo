@@ -58,7 +58,7 @@ export function ShapeSelector({ value, onValueChange }: ShapeSelectorProps) {
                     />
                   </div>
                   <h3 className={cn(
-                    'font-semibold text-center text-xs sm:text-sm transition-colors duration-200 line-clamp-1',
+                    'font-semibold text-center text-base transition-colors duration-200 line-clamp-1',
                     isSelected 
                       ? 'font-extrabold text-accent' 
                       : 'text-foreground group-hover:text-accent'

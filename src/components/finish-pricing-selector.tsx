@@ -60,7 +60,7 @@ export function FinishPricingSelector({ value, onValueChange }: FinishPricingSel
                   )}
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center h-full min-h-[100px]">
                      <h3 className={cn(
-                      'font-semibold text-sm transition-colors duration-200 line-clamp-1',
+                      'font-semibold text-base transition-colors duration-200 line-clamp-1',
                       isSelected 
                         ? 'font-extrabold text-accent' 
                         : 'text-foreground group-hover:text-accent'
@@ -68,7 +68,7 @@ export function FinishPricingSelector({ value, onValueChange }: FinishPricingSel
                       {finish.name}
                     </h3>
                      <p className={cn(
-                      'text-xs mt-1 transition-all duration-200 line-clamp-2',
+                      'text-sm mt-1 transition-all duration-200 line-clamp-2',
                       isSelected 
                         ? 'text-accent/80 opacity-100' 
                         : 'text-muted-foreground'

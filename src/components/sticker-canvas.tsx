@@ -72,11 +72,11 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
           
           {/* File info overlay */}
           <div className="absolute bottom-4 left-4 bg-card/80 backdrop-blur-sm border border-border rounded-lg p-3 opacity-100 group-hover:opacity-100 transition-all duration-200">
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-2 text-base">
               <Image className="h-4 w-4 text-accent" />
               <span className="font-medium text-foreground">{files[0].name}</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               {(files[0].size / 1024).toFixed(1)} KB
             </p>
           </div>
@@ -115,14 +115,14 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
               {isDragActive ? 'Drop your design here!' : 'Upload Your Design'}
             </h3>
             
-            <p className="text-sm mb-4">
+            <p className="text-base mb-4">
               {isDragActive 
                 ? 'Release to upload your file' 
                 : "Drag 'n' drop a PNG file here, or click to select"
               }
             </p>
             
-            <div className="flex items-center justify-center gap-4 text-xs">
+            <div className="flex items-center justify-center gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <Zap className="h-3 w-3 text-accent" />
                 <span>PNG format</span>
@@ -135,8 +135,8 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
             
             {/* Upload suggestions */}
             <div className="mt-6 p-4 bg-secondary/30 rounded-lg border border-border">
-              <p className="text-xs text-muted-foreground font-medium mb-2">💡 Pro Tips:</p>
-              <ul className="text-xs text-muted-foreground space-y-1 text-left">
+              <p className="text-sm text-muted-foreground font-medium mb-2">💡 Pro Tips:</p>
+              <ul className="text-sm text-muted-foreground space-y-1 text-left">
                 <li>• Use high-resolution PNG files (300+ DPI)</li>
                 <li>• Transparent backgrounds work best</li>
                 <li>• Keep designs under 10MB for optimal performance</li>

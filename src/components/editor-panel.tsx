@@ -32,7 +32,7 @@ export function EditorPanel() {
 
   const ColorPicker = ({ value, onChange, label }) => (
     <div className="space-y-2">
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+      <label className="text-sm font-medium text-muted-foreground">{label}</label>
       <div className="flex items-center space-x-2">
         <div 
           className="w-8 h-8 rounded border-2 border-border cursor-pointer transition-all hover:scale-105"
@@ -46,7 +46,7 @@ export function EditorPanel() {
           onChange={(e) => onChange(e.target.value)}
           className="sr-only"
         />
-        <span className="text-xs text-muted-foreground font-mono">{value}</span>
+        <span className="text-sm text-muted-foreground font-mono">{value}</span>
       </div>
     </div>
   );
@@ -54,8 +54,8 @@ export function EditorPanel() {
   const Slider = ({ label, value, onChange, min = 0, max = 100, step = 1, unit = '' }) => (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <label className="text-xs font-medium text-muted-foreground">{label}</label>
-        <span className="text-xs text-muted-foreground">{value}{unit}</span>
+        <label className="text-sm font-medium text-muted-foreground">{label}</label>
+        <span className="text-sm text-muted-foreground">{value}{unit}</span>
       </div>
       <input
         type="range"
@@ -124,12 +124,12 @@ export function EditorPanel() {
                 />
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground">Pattern</label>
+                  <label className="text-sm font-medium text-muted-foreground">Pattern</label>
                   <div className="grid grid-cols-2 gap-2">
                     {['None', 'Dots', 'Grid', 'Noise'].map((pattern) => (
                       <button
                         key={pattern}
-                        className="p-2 text-xs bg-secondary/50 hover:bg-secondary text-secondary-foreground rounded transition-all duration-200 border border-border hover:border-accent/50"
+                        className="p-2 text-sm bg-secondary/50 hover:bg-secondary text-secondary-foreground rounded transition-all duration-200 border border-border hover:border-accent/50"
                       >
                         {pattern}
                       </button>
@@ -140,7 +140,7 @@ export function EditorPanel() {
                 <div className="p-3 bg-secondary/30 rounded-lg border border-border">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="h-4 w-4 text-accent" />
-                    <span className="text-sm font-medium">Preview</span>
+                    <span className="text-base font-medium">Preview</span>
                   </div>
                   <div 
                     className="w-full h-16 rounded border border-border"
@@ -179,12 +179,12 @@ export function EditorPanel() {
                 />
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground">Shadow</label>
+                  <label className="text-sm font-medium text-muted-foreground">Shadow</label>
                   <div className="grid grid-cols-3 gap-2">
                     {['None', 'Soft', 'Hard'].map((shadow) => (
                       <button
                         key={shadow}
-                        className="p-2 text-xs bg-secondary/50 hover:bg-secondary text-secondary-foreground rounded transition-all duration-200 border border-border hover:border-accent/50"
+                        className="p-2 text-sm bg-secondary/50 hover:bg-secondary text-secondary-foreground rounded transition-all duration-200 border border-border hover:border-accent/50"
                       >
                         {shadow}
                       </button>
@@ -195,7 +195,7 @@ export function EditorPanel() {
                 <div className="p-3 bg-secondary/30 rounded-lg border border-border">
                   <div className="flex items-center gap-2 mb-2">
                     <Eye className="h-4 w-4 text-accent" />
-                    <span className="text-sm font-medium">Preview</span>
+                    <span className="text-base font-medium">Preview</span>
                   </div>
                   <div 
                     className="w-full h-16 bg-secondary/50"
@@ -220,19 +220,19 @@ export function EditorPanel() {
                 <button className="w-full p-4 bg-accent/10 hover:bg-accent/20 border-2 border-dashed border-accent/50 rounded-lg transition-all duration-200 group">
                   <div className="text-center">
                     <Upload className="h-8 w-8 mx-auto mb-2 text-accent group-hover:scale-110 transition-transform" />
-                    <p className="text-sm font-medium text-foreground">Upload Image</p>
-                    <p className="text-xs text-muted-foreground">PNG, JPG, SVG up to 10MB</p>
+                    <p className="text-base font-medium text-foreground">Upload Image</p>
+                    <p className="text-sm text-muted-foreground">PNG, JPG, SVG up to 10MB</p>
                   </div>
                 </button>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground">Layers</label>
+                  <label className="text-sm font-medium text-muted-foreground">Layers</label>
                   <div className="space-y-2">
                     {['Background', 'Image 1', 'Text Layer'].map((layer, index) => (
                       <div key={layer} className="flex items-center justify-between p-3 bg-secondary/30 rounded border border-border hover:border-accent/50 transition-colors">
                         <div className="flex items-center gap-2">
                           <Layers className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm text-foreground">{layer}</span>
+                          <span className="text-base text-foreground">{layer}</span>
                         </div>
                         <button className="p-1 hover:bg-secondary rounded transition-colors">
                           <Eye className="h-4 w-4 text-muted-foreground hover:text-accent" />
@@ -270,7 +270,7 @@ export function EditorPanel() {
                 />
 
                 <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground">Alignment</label>
+                  <label className="text-sm font-medium text-muted-foreground">Alignment</label>
                   <div className="grid grid-cols-3 gap-2">
                     {['↖', '↑', '↗', '←', '⊙', '→', '↙', '↓', '↘'].map((align, index) => (
                       <button
