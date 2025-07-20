@@ -35,21 +35,26 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
   const getGridLayout = (count: GridOption) => {
     if (count <= 1) return { cols: 1, rows: 1 };
   
-    let bestFactor = 1;
-    for (let i = 2; i * i <= count; i++) {
-      if (count % i === 0) {
-        bestFactor = i;
-      }
+    // Find factors of the count
+    const factors = [];
+    for (let i = 1; i <= Math.sqrt(count); i++) {
+        if (count % i === 0) {
+            factors.push([i, count / i]);
+        }
     }
-  
-    const otherFactor = count / bestFactor;
+
+    if (factors.length === 0) return { cols: count, rows: 1};
+
+    // Find the factor pair with the smallest difference (closest to a square)
+    let bestFactors = factors[factors.length -1];
+    
     const isVertical = sizeOption === 'Vertical Sheet';
     
     // Prioritize more columns for horizontal, more rows for vertical
     if (isVertical) {
-      return { cols: Math.min(bestFactor, otherFactor), rows: Math.max(bestFactor, otherFactor) };
+      return { cols: Math.min(bestFactors[0], bestFactors[1]), rows: Math.max(bestFactors[0], bestFactors[1]) };
     } else {
-      return { cols: Math.max(bestFactor, otherFactor), rows: Math.min(bestFactor, otherFactor) };
+      return { cols: Math.max(bestFactors[0], bestFactors[1]), rows: Math.min(bestFactors[0], bestFactors[1]) };
     }
   };
 
@@ -143,7 +148,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
   };
 
   const filePreview = useMemo(() => {
-    if (files.length === 0) return null;
+    if (files.length === 0 && !isSheet) return null;
     
     if (!isSheet && files[0]?.preview) {
       return (
@@ -215,7 +220,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
                    <div {...getRootProps({ className: 'w-full h-full' })}>
                     <div className="text-center text-muted-foreground text-xs flex flex-col items-center justify-center h-full cursor-pointer hover:bg-accent/10 rounded-lg">
                       <div className="w-8 h-8 mx-auto mb-1 rounded-lg border-2 border-dashed border-border/50 flex items-center justify-center">
-                        <Image className="w-4 h-4" />
+                        <Image className="w-4 h-4 text-muted-foreground" />
                       </div>
                       Drop image
                     </div>
@@ -229,7 +234,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
     }
     
     return null;
-  }, [files, position, rotation, scale, gridOption, isSheet, sizeOption, getGridLayout, removeFile, getRootProps]);
+  }, [files, isSheet, position, rotation, scale, gridOption, sizeOption, getGridLayout, removeFile, getRootProps]);
 
   const getCanvasAspect = () => {
     if (!isSheet) return 'aspect-square';
