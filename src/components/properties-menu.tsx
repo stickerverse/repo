@@ -41,13 +41,13 @@ export function PropertiesMenu({
             <div className="md:col-span-3">
               <ShapeSelector 
                 value={shape} 
-                onValueChange={(value: string) => setShape(value as any)} 
+                onValueChange={(value: string) => setShape(value as StickerShape)} 
               />
             </div>
             <div className="md:col-span-6">
               <MaterialSelector 
                 value={material} 
-                onValueChange={(value: string) => setMaterial(value as any)} 
+                onValueChange={(value: string) => setMaterial(value as StickerMaterial)} 
               />
             </div>
             <div className="md:col-span-3">

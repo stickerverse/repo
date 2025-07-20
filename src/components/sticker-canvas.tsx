@@ -70,7 +70,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
 
     if (factors.length === 0) return { cols: count, rows: 1};
 
-    let bestFactors = factors[factors.length -1];
+    const bestFactors = factors[factors.length -1];
     
     if (sizeOption === 'Vertical Sheet') {
       return { cols: Math.min(bestFactors[0], bestFactors[1]), rows: Math.max(bestFactors[0], bestFactors[1]) };
@@ -217,7 +217,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
         rotation: originalFile.rotation || 0,
         selected: false,
       });
-    }).filter(Boolean);
+    }).filter(Boolean) as FileWithPreview[];
     
     const updatedFiles = [...files, ...newFiles];
     setFiles(updatedFiles);
@@ -262,7 +262,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
   }, [snapToGrid, isFreeformMode]);
 
   const onDrop = React.useCallback(
-    (acceptedFiles: FileWithPath[], rejectedFiles: any[]) => {
+    (acceptedFiles: FileWithPath[], rejectedFiles: FileWithPath[]) => {
       if (rejectedFiles.length > 0) {
         toast({
           variant: 'destructive',
@@ -273,7 +273,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
       }
       
       const maxFiles = isFreeformMode ? 50 : currentGridOption; // Allow more files in freeform mode
-      let existingFilesCount = files.length;
+      const existingFilesCount = files.length;
       const filesToProcess = acceptedFiles.slice(0, maxFiles - existingFilesCount);
       
       const newFiles = filesToProcess.map((file, index) => {
@@ -581,7 +581,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
                   "border-2 border-dashed border-transparent group cursor-move",
                   isSelected && "border-accent ring-2 ring-accent/50"
                 )}
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                   toggleFileSelection(index, e.shiftKey);
                 }}

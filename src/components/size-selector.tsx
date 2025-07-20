@@ -9,7 +9,7 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { useState } from 'react';
 
-export type SizeOption = 'Horizontal Sheet' | 'Vertical Sheet' | 'A4' | 'US Letter' | '5x7' | '6x9' | 'Custom size';
+export type SizeOption = 'A4' | 'A3' | 'Letter' | 'Legal' | 'Tabloid' | 'Vertical Sheet';
 
 type SizeSelectorProps = {
   value: string;
@@ -34,28 +34,34 @@ const sheetSizes = [
     description: 'Standard A4 size'
   },
   { 
-    name: 'US Letter', 
+    name: 'A3', 
+    dimensions: '11.7" x 16.5"',
+    aspectRatio: 11.7 / 16.5,
+    description: 'Large A3 size'
+  },
+  { 
+    name: 'Letter', 
     dimensions: '8.5" x 11"',
     aspectRatio: 8.5 / 11,
     description: 'Standard US Letter'
   },
   { 
-    name: '5x7', 
-    dimensions: '5" x 7"',
-    aspectRatio: 5 / 7,
-    description: 'Compact sheet'
+    name: 'Legal', 
+    dimensions: '8.5" x 14"',
+    aspectRatio: 8.5 / 14,
+    description: 'US Legal size'
   },
   { 
-    name: '6x9', 
-    dimensions: '6" x 9"',
-    aspectRatio: 6 / 9,
-    description: 'Medium sheet'
+    name: 'Tabloid', 
+    dimensions: '11" x 17"',
+    aspectRatio: 11 / 17,
+    description: 'Large tabloid size'
   },
   { 
-    name: 'Custom size', 
-    dimensions: 'Custom',
-    aspectRatio: 1,
-    description: 'Define your own'
+    name: 'Vertical Sheet', 
+    dimensions: '8.5" x 11"',
+    aspectRatio: 8.5 / 11,
+    description: 'Portrait orientation'
   },
 ];
 

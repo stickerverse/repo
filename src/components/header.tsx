@@ -1,6 +1,7 @@
 
 "use client";
 import * as React from "react";
+import Link from "next/link";
 import MegaMenu from "@/components/ui/mega-menu";
 import type { MegaMenuItem } from "@/components/ui/mega-menu";
 import {
@@ -201,10 +202,10 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-slate-950/50 backdrop-blur-sm">
       <nav className="container mx-auto px-4 flex items-center justify-between py-2">
-        <a href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
             <Aperture className="h-6 w-6 text-white" />
             <span className="text-lg font-bold text-white">Cosmic Sticker Studio</span>
-        </a>
+        </Link>
         <MegaMenu items={NAV_ITEMS} />
       </nav>
     </header>

@@ -6,6 +6,7 @@ import type { FileWithPath } from 'react-dropzone';
 import { StickerCanvas, type FileWithPreview } from '@/components/sticker-canvas';
 import { PropertiesMenu } from '@/components/properties-menu';
 import { ProductSelector } from '@/components/product-selector';
+import { HybridStickerSelector, type HybridStickerConfig } from '@/components/hybrid-sticker-selector';
 
 export type StickerMaterial = 'Vinyl' | 'Holographic' | 'Transparent' | 'Glitter' | 'Mirror' | 'Pixie Dust';
 export type StickerShape = 'Contour Cut' | 'Square' | 'Circle' | 'Rounded Corners';
@@ -18,6 +19,17 @@ export default function StickerStudio() {
   const [material, setMaterial] = useState<StickerMaterial>('Vinyl');
   const [finish, setFinish] = useState<StickerFinish>('Standard');
   const [files, setFiles] = useState<FileWithPreview[]>([]);
+  
+  const [hybridConfig, setHybridConfig] = useState<HybridStickerConfig>({
+    mode: 'grid',
+    gridLayout: { rows: 3, cols: 4, spacing: 5, margin: 10, total: 12, name: "3x4 Standard" },
+    sheetSize: 'A4',
+    freeformSettings: {
+      snapToGrid: false,
+      gridSize: 20,
+      showGuides: true,
+    },
+  });
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
@@ -32,11 +44,22 @@ export default function StickerStudio() {
         <StickerCanvas 
           files={files} 
           setFiles={setFiles}
-          sizeOption="A4"
-          gridOption={12}
+          sizeOption={hybridConfig.sheetSize}
+          gridOption={hybridConfig.gridLayout.total}
+          gridLayout={hybridConfig.gridLayout}
           product={product}
           shape={shape}
+          mode={product === 'Sticker Sheets' ? hybridConfig.mode : 'grid'}
+          snapToGrid={hybridConfig.freeformSettings.snapToGrid}
         />
+        
+        {product === 'Sticker Sheets' && (
+          <HybridStickerSelector
+            config={hybridConfig}
+            onConfigChange={setHybridConfig}
+          />
+        )}
+        
         <PropertiesMenu
           shape={shape}
           setShape={setShape}
