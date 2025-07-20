@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, from 'react';
@@ -243,7 +242,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
 
   return (
     <div className="space-y-6">
-      <div className={cn("relative w-full h-[500px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg", getCanvasAspect())}>
+      <div className={cn("relative w-full h-[700px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg", getCanvasAspect())}>
       <div className="absolute inset-0 stars opacity-100 pointer-events-none" />
       
       <div {...getRootProps({ 
