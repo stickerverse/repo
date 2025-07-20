@@ -141,8 +141,10 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
                   </h3>
 
                   {/* Description */}
-                  <p className={cn(
-                    'text-xs text-center mt-1 transition-all duration-200 block px-2',
+                  <p
+                    style={{ fontSize: '0.7rem', lineHeight: '1rem' }}
+                    className={cn(
+                    'text-center mt-1 transition-all duration-200 block px-2',
                     isSelected 
                       ? 'text-accent/80 opacity-100' 
                       : 'text-muted-foreground opacity-0 group-hover:opacity-100'
