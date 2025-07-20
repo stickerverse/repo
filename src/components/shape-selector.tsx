@@ -47,7 +47,7 @@ export function ShapeSelector({ value, onValueChange }: ShapeSelectorProps) {
                 )}
                 <div className="flex flex-col items-center justify-center p-2 sm:p-4 h-full min-h-[100px] sm:min-h-[120px]">
                   <div className={cn(
-                    "relative w-10 h-10 sm:w-12 sm:h-12 mb-2 transition-transform duration-300 group-hover:scale-110 invert",
+                    "relative w-10 h-10 sm:w-12 sm:h-12 mb-2 transition-transform duration-300 group-hover:scale-110",
                      isSelected && "ring-2 ring-accent/30 rounded-lg"
                   )}>
                     <Image 
@@ -55,6 +55,7 @@ export function ShapeSelector({ value, onValueChange }: ShapeSelectorProps) {
                       alt={shape.label} 
                       fill 
                       className="object-contain"
+                      style={{ filter: 'invert(1)' }}
                     />
                   </div>
                   <h3 className={cn(
