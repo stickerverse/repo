@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -16,7 +17,9 @@ import {
   Layers,
   Eye,
   Settings,
-  Sparkles
+  Sparkles,
+  Eraser,
+  SquarePen,
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { GradientBorderButton } from './ui/gradient-border-button';
@@ -83,12 +86,24 @@ export function EditorPanel({
     <Card className="w-80 h-auto bg-card/90 backdrop-blur-md border-border shadow-2xl">
       <CardContent className="p-4">
         <Tabs defaultValue="edit" className="w-full" onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4 bg-secondary/50 p-1 h-auto rounded-lg backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-6 bg-secondary/50 p-1 h-auto rounded-lg backdrop-blur-sm">
              <TabsTrigger 
               value="edit" 
               className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
             >
               <Pencil className="h-5 w-5"/>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="bg-removal" 
+              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
+            >
+              <Eraser className="h-5 w-5"/>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="add-border" 
+              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
+            >
+              <SquarePen className="h-5 w-5"/>
             </TabsTrigger>
             <TabsTrigger 
               value="background" 
@@ -111,11 +126,49 @@ export function EditorPanel({
           </TabsList>
 
           <div className="mt-6 text-foreground">
+            <TabsContent value="bg-removal" className="space-y-4 mt-0">
+               <div className="space-y-4">
+                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
+                  <Eraser className="h-5 w-5 text-accent" />
+                  Background Removal
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  AI-powered background removal coming soon!
+                </p>
+                 <GradientBorderButton 
+                  className="w-full font-medium"
+                  disabled
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Remove Background
+                </GradientBorderButton>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="add-border" className="space-y-4 mt-0">
+               <div className="space-y-4">
+                <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
+                  <SquarePen className="h-5 w-5 text-accent" />
+                  Add Image Border
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Functionality to add a border to your uploaded image will be available here.
+                </p>
+                <GradientBorderButton 
+                  className="w-full font-medium"
+                  disabled
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate Border
+                </GradientBorderButton>
+              </div>
+            </TabsContent>
+
             <TabsContent value="background" className="space-y-4 mt-0">
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
                   <Palette className="h-5 w-5 text-accent" />
-                  Background
+                  Sticker Background
                 </h3>
                 
                 <ColorPicker 
@@ -167,7 +220,7 @@ export function EditorPanel({
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-foreground">
                   <Square className="h-5 w-5 text-accent" />
-                  Border & Effects
+                  Sticker Border & Effects
                 </h3>
                 
                 <Slider
