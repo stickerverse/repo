@@ -246,7 +246,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
 
   return (
     <div className="space-y-6">
-      <div className={`relative ${getCanvasAspect()} w-full h-auto min-h-[250px] md:min-h-[300px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg`}>
+      <div className={`relative ${getCanvasAspect()} w-full h-auto bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg`}>
       <div className="absolute inset-0 stars opacity-100 pointer-events-none" />
       
       <div {...getRootProps({ 
