@@ -197,7 +197,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product
       const shapeClasses = getShapeClasses(shape);
       
       return (
-        <div className="absolute inset-4 grid gap-2" style={{ 
+        <div className="absolute inset-2 grid gap-2" style={{ 
           gridTemplateColumns: `repeat(${cols}, 1fr)`,
           gridTemplateRows: `repeat(${rows}, 1fr)`
         }}>
