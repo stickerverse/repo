@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { GradientBorderButton } from './ui/gradient-border-button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 type EditorPanelProps = {
   scale: number;
@@ -30,6 +31,15 @@ type EditorPanelProps = {
   rotation: number;
   setRotation: (rotation: number) => void;
 };
+
+const TABS = [
+  { value: 'edit', label: 'Transform', icon: <Pencil className="h-5 w-5"/> },
+  { value: 'bg-removal', label: 'Background Removal', icon: <Eraser className="h-5 w-5"/> },
+  { value: 'add-border', label: 'Add Border', icon: <SquarePen className="h-5 w-5"/> },
+  { value: 'background', label: 'Sticker Background', icon: <Pipette className="h-5 w-5"/> },
+  { value: 'border', label: 'Border & Effects', icon: <SlidersHorizontal className="h-5 w-5"/> },
+  { value: 'upload', label: 'Assets & Layers', icon: <Image className="h-5 w-5"/> },
+];
 
 export function EditorPanel({
   scale,
@@ -87,42 +97,23 @@ export function EditorPanel({
       <CardContent className="p-4">
         <Tabs defaultValue="edit" className="w-full" onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-6 bg-secondary/50 p-1 h-auto rounded-lg backdrop-blur-sm">
-             <TabsTrigger 
-              value="edit" 
-              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
-            >
-              <Pencil className="h-5 w-5"/>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="bg-removal" 
-              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
-            >
-              <Eraser className="h-5 w-5"/>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="add-border" 
-              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
-            >
-              <SquarePen className="h-5 w-5"/>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="background" 
-              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
-            >
-              <Pipette className="h-5 w-5"/>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="border" 
-              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
-            >
-              <SlidersHorizontal className="h-5 w-5"/>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="upload" 
-              className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
-            >
-              <Image className="h-5 w-5"/>
-            </TabsTrigger>
+             {TABS.map((tab) => (
+                <TooltipProvider key={tab.value}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <TabsTrigger 
+                        value={tab.value} 
+                        className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground transition-all duration-200 hover:bg-secondary/80 rounded-md p-3"
+                      >
+                        {tab.icon}
+                      </TabsTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{tab.label}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
           </TabsList>
 
           <div className="mt-6 text-foreground">
