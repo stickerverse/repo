@@ -25,7 +25,7 @@ export default function StickerCustomizer() {
 
   return (
     <div className="w-full">
-      <header className="text-center mb-8">
+      <header className="text-center mb-12">
         <h2 className="text-4xl md:text-5xl font-bold font-headline text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
           Print customized stickers
         </h2>
