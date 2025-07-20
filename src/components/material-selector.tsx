@@ -108,7 +108,7 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
                   </div>
                 )}
 
-                <div className="flex flex-col items-center justify-center p-2 sm:p-4 h-full min-h-[160px] sm:min-h-[170px]">
+                <div className="flex flex-col items-center justify-center p-2 sm:p-4 h-full min-h-[170px]">
                   {/* Image Container */}
                   <div className={cn(
                     "relative w-12 h-12 sm:w-16 sm:h-16 mb-2 sm:mb-3 overflow-hidden rounded-lg transition-transform duration-300",
@@ -121,13 +121,6 @@ export function MaterialSelector({ value, onValueChange }: MaterialSelectorProps
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
-                    
-                    {/* Hover Overlay */}
-                    {isHovered && IconComponent && (
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent flex items-end justify-center pb-1">
-                          <IconComponent className="h-4 w-4 text-accent animate-pulse" />
-                      </div>
-                    )}
                   </div>
 
                   {/* Material Name */}
