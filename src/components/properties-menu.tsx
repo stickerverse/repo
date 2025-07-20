@@ -41,10 +41,10 @@ export function PropertiesMenu({
             <div className="md:col-span-3">
               <ShapeSelector value={shape} onValueChange={setShape} />
             </div>
-            <div className="md:col-span-5">
+            <div className="md:col-span-6">
               <MaterialSelector value={material} onValueChange={setMaterial} />
             </div>
-            <div className="md:col-span-4">
+            <div className="md:col-span-3">
               <FinishPricingSelector value={finish} onValueChange={setFinish} />
             </div>
           </div>
