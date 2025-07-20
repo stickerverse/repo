@@ -251,11 +251,11 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
   const getShapeClasses = (baseShape: StickerShape) => {
     switch (baseShape) {
       case 'Circle':
-        return 'rounded-full';
+        return 'rounded-full aspect-square';
       case 'Square':
-        return 'rounded-none';
+        return 'rounded-none aspect-square';
       case 'Rounded Corners':
-        return 'rounded-lg';
+        return 'rounded-lg aspect-square';
       case 'Contour Cut':
       default:
         return 'rounded-lg';
@@ -291,7 +291,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
     handleFitToView();
     window.addEventListener('resize', handleFitToView);
     return () => window.removeEventListener('resize', handleFitToView);
-  }, [handleFitToView]);
+  }, [handleFitToView, gridOption, sizeOption]);
 
   const handleZoom = (factor: number) => {
     if (!canvasRef.current) return;
@@ -344,11 +344,9 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
       const shapeClasses = getShapeClasses(shape);
       const resizeHandleClasses = 'w-3 h-3 bg-accent border-2 border-background rounded-full';
       
-      // Calculate proper spacing and margins from gridLayout
       const baseSpacing = gridLayout?.spacing ?? 5;
       const margin = gridLayout?.margin ?? 10;
       
-      // Get adjusted spacing that ensures grid fits within bounds
       const { spacing } = getAdjustedSpacing(baseSpacing, margin, cols, rows, rndState.width, rndState.height);
       
       const stickerGrid = (
@@ -390,7 +388,6 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
                             }}
                           />
                           
-                          {/* Hover Controls */}
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200 rounded-lg flex items-center justify-center">
                             <div className="flex gap-1">
                               <Tooltip>
@@ -452,7 +449,6 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
                             </div>
                           </div>
                           
-                          {/* Cell Number Badge */}
                           <div className="absolute top-1 left-1 bg-accent text-accent-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold opacity-70">
                             {index + 1}
                           </div>
@@ -465,7 +461,6 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
                             </div>
                             <span className="text-[10px]">Drop or click</span>
                             
-                            {/* Cell Number Badge for Empty Cells */}
                             <div className="absolute top-1 left-1 bg-muted text-muted-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold opacity-50">
                               {index + 1}
                             </div>
@@ -523,16 +518,49 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files, isSheet, position, rotation, scale, gridOption, getGridLayout, removeFile, getRootProps, shape, rndState, showSafeZones, cols, rows]);
 
-  const getCanvasAspect = () => {
-    if (!isSheet) return 'aspect-square';
-    if (sizeOption === 'Vertical Sheet') {
-      return 'aspect-[3/4]';
-    }
-    return 'aspect-[16/9]';
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      <div className="absolute top-0 left-0 p-4 z-10">
+        {files.length === 0 && isSheet && (
+            <div className="text-muted-foreground bg-background/50 rounded-lg backdrop-blur-sm border border-border p-4">
+              <h3 className="font-bold text-lg text-foreground mb-1">
+                Sticker Sheet ({cols}x{rows})
+              </h3>
+              <p className="text-base">
+                Drop images onto the grid cells or click to upload.
+              </p>
+            </div>
+        )}
+
+        {files.length === 0 && !isSheet && (
+          <div className="text-muted-foreground bg-background/50 rounded-lg backdrop-blur-sm border border-border max-w-sm p-4">
+            <div className="flex items-center gap-3 mb-2">
+              <UploadCloud className={cn('h-8 w-8 text-accent transition-all duration-300', {
+                'scale-110 animate-pulse': isDragActive
+              })} />
+              <h3 className="font-bold text-lg text-foreground">
+                {isDragActive ? 'Drop your design here!' : 'Upload Your Design'}
+              </h3>
+            </div>
+            <p className="text-base mb-3">
+              {isDragActive 
+                ? 'Release to upload your file' 
+                : "Drag 'n' drop an image file here, or click to select."
+              }
+            </p>
+            <div className="flex items-center justify-start gap-4 text-sm">
+              <div className="flex items-center gap-1.5">
+                <Zap className="h-3.5 w-3.5 text-accent" />
+                <span>PNG, JPG, SVG</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-accent" />
+                <span>Max 10MB</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
       <div 
         ref={canvasRef}
         className={cn("relative w-full h-[700px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg")}
@@ -545,88 +573,10 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
         }) 
       })}>
         <input {...getInputProps()} id="file-upload-input" />
-        
-        {files.length < currentGridOption && !isSheet && (
-          <div className="text-center p-8 text-muted-foreground relative z-10">
-            <div className="relative mb-6">
-              <UploadCloud className={cn('mx-auto h-16 w-16 mb-4 text-accent transition-all duration-300', {
-                'scale-110 animate-bounce': isDragActive
-              })} />
-              {isDragActive && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Sparkles className="h-8 w-8 text-accent animate-spin" />
-                </div>
-              )}
-            </div>
-            
-            <h3 className="font-bold text-lg text-foreground mb-2">
-              {isDragActive ? 'Drop your design here!' : 'Upload Your Design'}
-            </h3>
-            
-            <p className="text-base mb-4">
-              {isDragActive 
-                ? 'Release to upload your files' 
-                : "Drag 'n' drop image files here, or click to select"
-              }
-            </p>
-            
-            <div className="flex items-center justify-center gap-4 text-sm">
-              <div className="flex items-center gap-1">
-                <Zap className="h-3 w-3 text-accent" />
-                <span>PNG, JPG, SVG</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Sparkles className="h-3 w-3 text-accent" />
-                <span>Multiple formats</span>
-              </div>
-            </div>
-            
-            <div className="mt-6 p-4 bg-secondary/30 rounded-lg border border-border">
-              <p className="text-sm text-muted-foreground font-medium mb-2">💡 Pro Tips:</p>
-              <ul className="text-sm text-muted-foreground space-y-1 text-left">
-                <li>• Use high-resolution PNG files (300+ DPI)</li>
-                <li>• Transparent backgrounds work best</li>
-                <li>• Keep designs under 10MB for optimal performance</li>
-              </ul>
-            </div>
-          </div>
-        )}
 
-        {isSheet && files.length < currentGridOption && (
-          <div className="text-center p-8 text-muted-foreground relative z-10">
-             <h3 className="font-bold text-lg text-foreground mb-2">
-              Sticker Sheet ({cols}x{rows})
-            </h3>
-            <p className="text-base mb-4">
-              Drop images onto the grid cells or click to upload.
-            </p>
-          </div>
-        )}
-
-        {files.length > 0 && (
-           <div className="absolute bottom-4 left-4 bg-card/80 backdrop-blur-sm border border-border rounded-lg p-3 opacity-100 group-hover:opacity-100 transition-all duration-200 z-20 max-w-xs">
-            <div className="flex items-center gap-2 text-base mb-1">
-              <Image className="h-4 w-4 text-accent" />
-              <span className="font-medium text-foreground">
-                {files.length === 1 && !isSheet ? files[0].name : `${files.length} file${files.length > 1 ? 's' : ''} uploaded`}
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {files.length === 1 && !isSheet 
-                ? `${(files[0].size / 1024).toFixed(1)} KB`
-                : `${(files.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)).toFixed(2)} MB total`
-              }
-            </p>
-            {isSheet && files.length < gridOption && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {gridOption - files.length} more slots available
-              </p>
-            )}
-          </div>
-        )}
+        {filePreview}
       </div>
-
-      {filePreview}
+      
       
       {files.length > 0 && !isSheet && (
         <div className="absolute top-0 left-0 h-full p-4 z-10 pointer-events-none">
@@ -677,32 +627,7 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
       <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-accent/30 pointer-events-none" />
       <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-accent/30 pointer-events-none" />
       <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-accent/30 pointer-events-none" />
-
-      <style jsx>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        
-        .shimmer::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            90deg,
-            hsl(var(--accent) / 0.1),
-            transparent,
-            hsl(var(--accent) / 0.1)
-          );
-          animation: shimmer 2s infinite;
-        }
-      `}</style>
-      </div>
+    </div>
     </div>
   );
 }
-
-    
