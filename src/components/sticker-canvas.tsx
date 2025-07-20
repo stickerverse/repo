@@ -262,7 +262,8 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
   }, [snapToGrid, isFreeformMode]);
 
   const onDrop = React.useCallback(
-    (acceptedFiles: FileWithPath[], rejectedFiles: FileWithPath[]) => {
+    (acceptedFiles: FileWithPath[], fileRejections: any[]) => {
+      const rejectedFiles = fileRejections.map(rejection => rejection.file);
       if (rejectedFiles.length > 0) {
         toast({
           variant: 'destructive',

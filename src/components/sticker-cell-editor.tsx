@@ -29,7 +29,7 @@ interface StickerCellEditorProps {
   isVisible: boolean;
   onClose: () => void;
   file?: File & { preview?: string; scale?: number; rotation?: number };
-  onUpdate: (cellIndex: number, updates: { scale?: number; rotation?: number }) => void;
+  onUpdate: (cellIndex: number, updates: { scale?: number; rotation?: number; flip?: string; flipValue?: number; brightness?: number; fitted?: boolean; saturation?: number; contrast?: number; borderWidth?: number }) => void;
 }
 
 export function StickerCellEditor({ 
