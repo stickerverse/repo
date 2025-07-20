@@ -72,7 +72,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: "Space Grotesk", "Noto Sans", Helvetica, Arial, sans-serif;
+    font-family: "Space Grotesk", sans-serif;
   }
 
   .animated-gradient-border {
