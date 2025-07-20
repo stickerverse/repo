@@ -26,6 +26,8 @@ type StickerCanvasProps = {
   shape: StickerShape;
   mode?: 'grid' | 'freeform';
   snapToGrid?: boolean;
+  showGrid?: boolean;
+  gridSize?: number;
 };
 
 export type GridOption = number;
@@ -38,7 +40,7 @@ export interface FileWithPreview extends FileWithPath {
   selected?: boolean;
 }
 
-export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLayout, product, shape, mode = 'grid', snapToGrid = false }: StickerCanvasProps) {
+export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLayout, product, shape, mode = 'grid', snapToGrid = false, showGrid = true, gridSize = 20 }: StickerCanvasProps) {
   const { toast } = useToast();
   const [position, setPosition] = React.useState({ x: 0, y: 0 });
   const [scale, setScale] = React.useState(100);
@@ -254,12 +256,11 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
   const snapToGridPosition = React.useCallback((x: number, y: number) => {
     if (!snapToGrid || !isFreeformMode) return { x, y };
     
-    const gridSize = 20; // Grid snap size in pixels
     return {
       x: Math.round(x / gridSize) * gridSize,
       y: Math.round(y / gridSize) * gridSize
     };
-  }, [snapToGrid, isFreeformMode]);
+  }, [snapToGrid, isFreeformMode, gridSize]);
 
   const onDrop = React.useCallback(
     (acceptedFiles: FileWithPath[], fileRejections: any[]) => {
@@ -569,18 +570,36 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
                 key={`freeform-${index}`}
                 size={{ width: 100, height: 100 }}
                 position={position}
-                onDragStop={(e, d) => {
+                onDragStart={() => {
+                  // Optional: Add visual feedback when drag starts
+                }}
+                onDrag={(_e, _d) => {
+                  // Live update position during drag for smooth movement
+                  // Note: react-rnd handles position updates automatically
+                }}
+                onDragStop={(_e, d) => {
                   updateFilePosition(index, { x: d.x, y: d.y });
                 }}
-                onResizeStop={(e, direction, ref, delta, position) => {
+                onResizeStop={(_e, _direction, _ref, _delta, position) => {
                   updateFilePosition(index, position);
                 }}
                 bounds="parent"
                 minWidth={40}
                 minHeight={40}
+                enableResizing={{
+                  top: true,
+                  right: true,
+                  bottom: true,
+                  left: true,
+                  topRight: true,
+                  bottomRight: true,
+                  bottomLeft: true,
+                  topLeft: true,
+                }}
                 className={cn(
-                  "border-2 border-dashed border-transparent group cursor-move",
-                  isSelected && "border-accent ring-2 ring-accent/50"
+                  "border-2 border-dashed border-transparent group cursor-move transition-all duration-200",
+                  isSelected && "border-accent ring-2 ring-accent/50 shadow-lg",
+                  "hover:border-accent/50"
                 )}
                 onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
@@ -591,10 +610,11 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
                   <img
                     src={file.preview}
                     alt={file.name}
-                    className="w-full h-full object-contain rounded"
+                    className="w-full h-full object-contain rounded transition-transform duration-200"
                     style={{
                       transform: `scale(${(file.scale || 100) / 100}) rotate(${file.rotation || 0}deg)`,
                     }}
+                    draggable={false}
                   />
                   
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200 rounded flex items-center justify-center">
@@ -730,16 +750,16 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
             </TooltipProvider>
           </div>
 
-          {/* Snap to grid overlay when enabled */}
-          {snapToGrid && (
-            <div className="absolute inset-0 pointer-events-none opacity-20">
+          {/* Grid overlay when enabled */}
+          {(showGrid || snapToGrid) && (
+            <div className="absolute inset-0 pointer-events-none opacity-30">
               <svg width="100%" height="100%">
                 <defs>
-                  <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+                  <pattern id="uniform-grid" width={gridSize} height={gridSize} patternUnits="userSpaceOnUse">
+                    <path d={`M ${gridSize} 0 L 0 0 0 ${gridSize}`} fill="none" stroke="currentColor" strokeWidth="0.5"/>
                   </pattern>
                 </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
+                <rect width="100%" height="100%" fill="url(#uniform-grid)" />
               </svg>
             </div>
           )}
@@ -886,8 +906,8 @@ export function StickerCanvas({ files, setFiles, sizeOption, gridOption, gridLay
         <Rnd
           size={{ width: rndState.width, height: rndState.height }}
           position={{ x: rndState.x, y: rndState.y }}
-          onDragStop={(e, d) => { setRndState(prev => ({ ...prev, x: d.x, y: d.y })) }}
-          onResizeStop={(e, direction, ref, delta, position) => {
+          onDragStop={(_e, d) => { setRndState(prev => ({ ...prev, x: d.x, y: d.y })) }}
+          onResizeStop={(_e, _direction, ref, _delta, position) => {
             setRndState({
               width: parseFloat(ref.style.width),
               height: parseFloat(ref.style.height),

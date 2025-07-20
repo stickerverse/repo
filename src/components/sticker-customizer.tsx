@@ -16,7 +16,9 @@ import type { StickerShape } from './sticker-studio';
 import { Card, CardContent } from './ui/card';
 import { LaminationSelector } from './lamination-selector';
 import { GradientBorderButton } from './ui/gradient-border-button';
-import { Upload } from 'lucide-react';
+import { Upload, Grid3X3, Move, Magnet } from 'lucide-react';
+import { Switch } from './ui/switch';
+import { Slider } from './ui/slider';
 
 export default function StickerCustomizer() {
   const [product, setProduct] = useState('Die Cut Sticker');
@@ -30,6 +32,9 @@ export default function StickerCustomizer() {
   const [sheetSizeOption, setSheetSizeOption] = useState<SheetSizeOption>('A4');
   const [gridOption, setGridOption] = useState<GridOption>(12);
   const [gridLayout, setGridLayout] = useState<GridLayout>({ rows: 3, cols: 4, spacing: 5, margin: 10, total: 12 });
+  const [showGrid, setShowGrid] = useState(true);
+  const [snapToGrid, setSnapToGrid] = useState(false);
+  const [gridSize, setGridSize] = useState(20);
 
 
   return (
@@ -45,6 +50,10 @@ export default function StickerCustomizer() {
               gridLayout={gridLayout}
               product={product}
               shape={shape}
+              mode={product === 'Sticker Sheet' ? 'freeform' : 'grid'}
+              showGrid={showGrid}
+              snapToGrid={snapToGrid}
+              gridSize={gridSize}
             />
           </CardContent>
         </Card>
@@ -96,6 +105,61 @@ export default function StickerCustomizer() {
                       <SizeSelector value={size} onValueChange={setSize} product={product} />
                       <QuantitySelector value={quantity} onValueChange={setQuantity} />
                     </>
+                  )}
+                  
+                  {/* Grid Controls for Freeform Mode */}
+                  {product === 'Sticker Sheet' && (
+                    <div className="space-y-4 p-4 bg-card/30 rounded-lg border border-border/20">
+                      <Label className="text-sm font-medium flex items-center gap-2">
+                        <Grid3X3 className="h-4 w-4" />
+                        Grid & Movement
+                      </Label>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-xs">Show Grid</Label>
+                          <Switch
+                            checked={showGrid}
+                            onCheckedChange={setShowGrid}
+                          />
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <Label className="text-xs flex items-center gap-1">
+                            <Magnet className="h-3 w-3" />
+                            Snap to Grid
+                          </Label>
+                          <Switch
+                            checked={snapToGrid}
+                            onCheckedChange={setSnapToGrid}
+                          />
+                        </div>
+                        
+                        {(showGrid || snapToGrid) && (
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-xs">Grid Size</Label>
+                              <span className="text-xs text-muted-foreground">{gridSize}px</span>
+                            </div>
+                            <Slider
+                              value={[gridSize]}
+                              onValueChange={(value) => setGridSize(value[0])}
+                              min={10}
+                              max={50}
+                              step={5}
+                              className="w-full"
+                            />
+                          </div>
+                        )}
+                        
+                        <div className="pt-2 border-t border-border/20">
+                          <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Move className="h-3 w-3" />
+                            Drag images freely on the canvas
+                          </Label>
+                        </div>
+                      </div>
+                    </div>
                   )}
               </div>
 
