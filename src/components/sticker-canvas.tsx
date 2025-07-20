@@ -3,17 +3,27 @@
 
 import React, { useCallback, useMemo, useState, useRef } from 'react';
 import { useDropzone, type FileWithPath } from 'react-dropzone';
-import { UploadCloud, X, Image, Sparkles, Zap } from 'lucide-react';
+import { UploadCloud, X, Image, Sparkles, Zap, Grid3X3, RectangleHorizontal, RectangleVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { EditorPanel } from './editor-panel';
+import type { SizeOption as SheetSizeOption } from './size-selector';
 
 type StickerCanvasProps = {
   files: FileWithPath[];
   setFiles: React.Dispatch<React.SetStateAction<FileWithPath[]>>;
+  sizeOption: SheetSizeOption;
+  gridOption: GridOption;
+  product: string;
 };
 
-export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
+export type GridOption = 1 | 4 | 6 | 9 | 12 | 16;
+
+interface FileWithPreview extends FileWithPath {
+  preview?: string;
+}
+
+export function StickerCanvas({ files, setFiles, sizeOption, gridOption, product }: StickerCanvasProps) {
   const { toast } = useToast();
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(100);
@@ -21,6 +31,20 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
   const isDragging = useRef(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const imageRef = useRef<HTMLDivElement>(null);
+
+  const getGridLayout = (count: number) => {
+    switch (count) {
+      case 4: return { cols: 2, rows: 2 };
+      case 6: return { cols: 3, rows: 2 };
+      case 9: return { cols: 3, rows: 3 };
+      case 12: return { cols: 4, rows: 3 };
+      case 16: return { cols: 4, rows: 4 };
+      default: return { cols: 1, rows: 1 };
+    }
+  };
+
+  const isSheet = product === 'Sticker Sheet';
+  const currentGridOption = isSheet ? gridOption : 1;
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[], rejectedFiles: any[]) => {
@@ -32,34 +56,54 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
         });
         return;
       }
-      setFiles(
-        acceptedFiles.map((file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        )
+      
+      const maxFiles = currentGridOption;
+      let existingFilesCount = files.length;
+      const filesToProcess = acceptedFiles.slice(0, maxFiles - existingFilesCount);
+      
+      const newFiles = filesToProcess.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
       );
-      // Reset transform on new image
-      setPosition({ x: 0, y: 0 });
-      setScale(100);
-      setRotation(0);
+
+      setFiles(prevFiles => [...prevFiles, ...newFiles]);
+
+      // Reset transform on new image only if it's not a sticker sheet
+      if (!isSheet) {
+        setPosition({ x: 0, y: 0 });
+        setScale(100);
+        setRotation(0);
+      }
     },
-    [setFiles, toast]
+    [setFiles, toast, currentGridOption, files.length, isSheet]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { 'image/png': ['.png'] },
-    maxFiles: 1,
-    noClick: files.length > 0,
-    noKeyboard: files.length > 0,
+    maxFiles: isSheet ? currentGridOption - files.length : 1 - files.length,
+    multiple: isSheet,
+    noClick: files.length >= currentGridOption,
+    noKeyboard: files.length >= currentGridOption,
   });
 
-  const removeFile = () => {
-    if (files.length > 0 && files[0].preview) {
-        URL.revokeObjectURL(files[0].preview);
+  const removeFile = (indexToRemove?: number) => {
+    if (indexToRemove !== undefined) {
+      const fileToRemove = files[indexToRemove];
+      if (fileToRemove?.preview) {
+        URL.revokeObjectURL(fileToRemove.preview);
+      }
+      setFiles(files.filter((_, i) => i !== indexToRemove));
+    } else {
+      // For single image
+      files.forEach(file => {
+        if (file.preview) {
+          URL.revokeObjectURL(file.preview);
+        }
+      });
+      setFiles([]);
     }
-    setFiles([]);
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -89,7 +133,9 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
   };
 
   const filePreview = useMemo(() => {
-    if (files.length > 0 && files[0].preview) {
+    if (files.length === 0) return null;
+    
+    if (!isSheet && files[0]?.preview) {
       return (
         <div 
           ref={imageRef}
@@ -109,7 +155,7 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
             size="icon"
             className="absolute top-0 right-0 z-20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 shadow-lg"
             onClick={(e) => {
-              e.stopPropagation(); // Prevent drag from starting
+              e.stopPropagation();
               removeFile();
             }}
           >
@@ -118,21 +164,84 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
         </div>
       );
     }
+    
+    if (isSheet) {
+      const { cols, rows } = getGridLayout(gridOption);
+      
+      return (
+        <div className="absolute inset-4 grid gap-2" style={{ 
+          gridTemplateColumns: `repeat(${cols}, 1fr)`,
+          gridTemplateRows: `repeat(${rows}, 1fr)`
+        }}>
+          {Array.from({ length: gridOption }).map((_, index) => {
+            const file = files[index];
+            return (
+              <div
+                key={index}
+                className={`relative border-2 border-dashed border-border/30 rounded-lg flex items-center justify-center group ${
+                  file ? 'bg-card/50' : 'bg-muted/20'
+                }`}
+              >
+                {file?.preview ? (
+                  <>
+                    <img
+                      src={file.preview}
+                      alt={file.name}
+                      className="max-w-full max-h-full object-contain p-1"
+                    />
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-1 right-1 z-20 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 shadow-lg h-6 w-6"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile(index);
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </>
+                ) : (
+                   <div {...getRootProps({ className: 'w-full h-full' })}>
+                    <div className="text-center text-muted-foreground text-xs flex flex-col items-center justify-center h-full cursor-pointer hover:bg-accent/10 rounded-lg">
+                      <div className="w-8 h-8 mx-auto mb-1 rounded-lg border-2 border-dashed border-border/50 flex items-center justify-center">
+                        <Image className="w-4 h-4" />
+                      </div>
+                      Drop image
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+    
     return null;
-  }, [files, position, rotation, scale]);
+  }, [files, position, rotation, scale, gridOption, isSheet, getGridLayout]);
+
+  const getCanvasAspect = () => {
+    if (!isSheet) return 'aspect-square';
+    if (sizeOption === 'Vertical Sheet') {
+      return 'aspect-[3/4]';
+    }
+    return 'aspect-video';
+  };
 
   return (
-    <div className="relative aspect-video w-full h-auto min-h-[400px] md:min-h-[500px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg">
+    <div className="space-y-6">
+      <div className={`relative ${getCanvasAspect()} w-full h-auto min-h-[400px] md:min-h-[500px] bg-card/80 border-dashed border-2 border-border hover:border-accent transition-all duration-300 ease-in-out flex items-center justify-center overflow-hidden shadow-2xl rounded-lg`}>
       <div className="absolute inset-0 stars opacity-100 pointer-events-none" />
       
       <div {...getRootProps({ 
         className: `w-full h-full flex items-center justify-center transition-all duration-300 ${
           isDragActive ? 'bg-accent/10 scale-105' : ''
-        } ${files.length > 0 ? '' : 'cursor-pointer'}` 
+        } ${files.length > 0 || isSheet ? '' : 'cursor-pointer'}` 
       })}>
         <input {...getInputProps()} id="file-upload-input" />
         
-        {files.length === 0 && (
+        {files.length < currentGridOption && !isSheet && (
           <div className="text-center p-8 text-muted-foreground relative z-10">
             <div className="relative mb-6">
               <UploadCloud className={`mx-auto h-16 w-16 mb-4 text-accent transition-all duration-300 ${
@@ -179,21 +288,31 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
         )}
 
         {files.length > 0 && (
-           <div className="absolute bottom-4 left-4 bg-card/80 backdrop-blur-sm border border-border rounded-lg p-3 opacity-100 group-hover:opacity-100 transition-all duration-200 z-20">
-            <div className="flex items-center gap-2 text-base">
+           <div className="absolute bottom-4 left-4 bg-card/80 backdrop-blur-sm border border-border rounded-lg p-3 opacity-100 group-hover:opacity-100 transition-all duration-200 z-20 max-w-xs">
+            <div className="flex items-center gap-2 text-base mb-1">
               <Image className="h-4 w-4 text-accent" />
-              <span className="font-medium text-foreground">{files[0].name}</span>
+              <span className="font-medium text-foreground">
+                {files.length === 1 ? files[0].name : `${files.length} file${files.length > 1 ? 's' : ''} uploaded`}
+              </span>
             </div>
-            <p className="text-sm text-muted-foreground mt-1">
-              {(files[0].size / 1024).toFixed(1)} KB
+            <p className="text-sm text-muted-foreground">
+              {files.length === 1 
+                ? `${(files[0].size / 1024).toFixed(1)} KB`
+                : `${(files.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)).toFixed(2)} MB total`
+              }
             </p>
+            {isSheet && files.length < gridOption && (
+              <p className="text-xs text-muted-foreground mt-1">
+                {gridOption - files.length} more slots available
+              </p>
+            )}
           </div>
         )}
       </div>
 
       {filePreview}
       
-      {files.length > 0 && (
+      {files.length > 0 && !isSheet && (
         <div className="absolute top-0 left-0 h-full p-4 z-10 pointer-events-none">
           <div className="pointer-events-auto">
             <EditorPanel 
@@ -227,10 +346,13 @@ export function StickerCanvas({ files, setFiles }: StickerCanvasProps) {
           background: linear-gradient(
             90deg,
             hsl(var(--accent) / 0.1),
+            transparent,
+            hsl(var(--accent) / 0.1)
           );
           animation: shimmer 2s infinite;
         }
       `}</style>
+      </div>
     </div>
   );
 }

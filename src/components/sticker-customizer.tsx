@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -6,13 +7,14 @@ import { ProductSelector } from '@/components/product-selector';
 import { ShapeSelector } from '@/components/shape-selector';
 import { MaterialSelector } from '@/components/material-selector';
 import { FinishSelector } from '@/components/finish-selector';
-import { SizeSelector } from '@/components/size-selector';
+import { SizeSelector, type SizeOption as SheetSizeOption } from '@/components/size-selector';
 import { QuantitySelector } from '@/components/quantity-selector';
-import { StickerCanvas } from './sticker-canvas';
+import { StickerCanvas, type GridOption } from './sticker-canvas';
 import { Card, CardContent } from './ui/card';
 import { LaminationSelector } from './lamination-selector';
 import { GradientBorderButton } from './ui/gradient-border-button';
 import { Upload } from 'lucide-react';
+import { SheetOptionsSelector } from './sheet-options-selector';
 
 export default function StickerCustomizer() {
   const [product, setProduct] = useState('Die Cut Sticker');
@@ -23,13 +25,22 @@ export default function StickerCustomizer() {
   const [size, setSize] = useState('2" x 2"');
   const [quantity, setQuantity] = useState('55');
   const [files, setFiles] = useState<FileWithPath[]>([]);
+  const [sheetSizeOption, setSheetSizeOption] = useState<SheetSizeOption>('Vertical Sheet');
+  const [gridOption, setGridOption] = useState<GridOption>(4);
+
 
   return (
     <div className="w-full">
       <div className="p-1 rounded-lg mb-8 shadow-2xl shadow-cyan-500/20">
         <Card className="bg-slate-950/80 backdrop-blur-sm border-0">
           <CardContent className="p-6">
-            <StickerCanvas files={files} setFiles={setFiles} />
+            <StickerCanvas 
+              files={files} 
+              setFiles={setFiles} 
+              sizeOption={sheetSizeOption}
+              gridOption={gridOption}
+              product={product}
+            />
           </CardContent>
         </Card>
       </div>
@@ -41,15 +52,27 @@ export default function StickerCustomizer() {
             <div className="grid grid-cols-12 gap-x-6 gap-y-8">
               <div className="col-span-12 md:col-span-4 space-y-6">
                 <ProductSelector value={product} onValueChange={setProduct} />
-                <LaminationSelector value={lamination} onValueChange={setLamination} />
-                <ShapeSelector value={shape} onValueChange={setShape} />
+                {product === 'Sticker Sheet' && (
+                  <SheetOptionsSelector
+                    sizeOption={sheetSizeOption}
+                    setSizeOption={setSheetSizeOption}
+                    gridOption={gridOption}
+                    setGridOption={setGridOption}
+                  />
+                )}
+                 {product !== 'Sticker Sheet' && (
+                  <>
+                    <LaminationSelector value={lamination} onValueChange={setLamination} />
+                    <ShapeSelector value={shape} onValueChange={setShape} />
+                  </>
+                 )}
               </div>
               <div className="col-span-12 md:col-span-4 space-y-6">
                   <MaterialSelector value={material} onValueChange={setMaterial} />
                   <FinishSelector value={finish} onValueChange={setFinish} />
               </div>
               <div className="col-span-12 md:col-span-4 space-y-6">
-                  <SizeSelector value={size} onValueChange={setSize} />
+                  <SizeSelector value={size} onValueChange={setSize} product={product} />
                   <QuantitySelector value={quantity} onValueChange={setQuantity} />
               </div>
 

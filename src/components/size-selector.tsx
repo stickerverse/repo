@@ -7,9 +7,12 @@ import { cn } from '@/lib/utils';
 import { CheckCircle } from 'lucide-react';
 import { Input } from './ui/input';
 
+export type SizeOption = 'Horizontal Sheet' | 'Vertical Sheet';
+
 type SizeSelectorProps = {
   value: string;
   onValueChange: (value: string) => void;
+  product: string;
 };
 
 const sizes = [
@@ -21,14 +24,21 @@ const sizes = [
     'Custom size',
 ];
 
-export function SizeSelector({ value, onValueChange }: SizeSelectorProps) {
+const sheetSizes: SizeOption[] = [
+  'Vertical Sheet',
+  'Horizontal Sheet',
+];
+
+export function SizeSelector({ value, onValueChange, product }: SizeSelectorProps) {
+  const isStickerSheet = product === 'Sticker Sheet';
+  const displaySizes = isStickerSheet ? sheetSizes : sizes;
   const isCustomSelected = value === 'Custom size';
 
   return (
     <div className="space-y-4">
       <Label className="text-xl font-black text-white mb-3 block">Size (WxH)</Label>
-      <div className="grid grid-cols-3 gap-3 sm:gap-4">
-        {sizes.map((size) => {
+      <div className={cn("grid gap-3 sm:gap-4", isStickerSheet ? "grid-cols-2" : "grid-cols-3")}>
+        {displaySizes.map((size) => {
           const isSelected = value === size;
           return (
             <div key={size} className="relative">
@@ -62,7 +72,7 @@ export function SizeSelector({ value, onValueChange }: SizeSelectorProps) {
           );
         })}
       </div>
-       {isCustomSelected && (
+       {isCustomSelected && !isStickerSheet && (
         <div className="mt-4 space-y-4">
            <div className="grid grid-cols-2 gap-4">
             <div className='space-y-2'>
